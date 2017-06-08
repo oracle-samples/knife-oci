@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo "This was created by CloudInit user data." >> user_data_example_output.txt

@@ -1,0 +1,7 @@
+*.gem
+.chef/
+.idea/
+.DS_Store
+chef-repo/
+dist/
+Gemfile.lock

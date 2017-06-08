@@ -1,0 +1,16 @@
+knife bmcs  --help
+
+Available bmcs subcommands: (for details, knife SUB-COMMAND --help)
+
+** BMCS COMMANDS **
+knife bmcs ad list (options)
+knife bmcs image list (options)
+knife bmcs server create (options)
+knife bmcs server list (options)
+knife bmcs shape list (options)
+
+
+
++++ STDERR +++
+
+FATAL: Cannot find subcommand for: 'bmcs --help'
