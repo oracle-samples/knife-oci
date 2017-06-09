@@ -1,0 +1,25 @@
+AllCops:
+  Exclude:
+    - '.chef/**/*'
+    - 'chef-repo/**/*'
+
+Metrics/LineLength:
+  Max: 200
+
+Metrics/ClassLength:
+  Max: 500
+
+Metrics/MethodLength:
+  Max: 500
+
+Metrics/AbcSize:
+  Max: 100
+
+Metrics/PerceivedComplexity:
+  Max: 9
+
+Metrics/BlockLength:
+  Max: 200
+
+Metrics/CyclomaticComplexity:
+  Max: 8

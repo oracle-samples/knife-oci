@@ -1,0 +1,9 @@
+[DEFAULT]
+user=ocid1.user.oc1..aaaaaaaa4fzscrlfqhwccvbipzy7oeaumb3pr447o6htcj2cfw7bmls6m5ea
+fingerprint=8a:05:94:0e:49:68:7e:a0:c4:ba:07:94:77:06:2b:a2
+key_file=spec/resources/dummy_ssh_key
+tenancy=tenancy_for_default_profile
+region=us-phoenix-1
+
+[SECOND_PROFILE]
+tenancy=tenancy_for_second_profile
