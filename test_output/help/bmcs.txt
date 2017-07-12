@@ -4,6 +4,7 @@ Available bmcs subcommands: (for details, knife SUB-COMMAND --help)
 
 ** BMCS COMMANDS **
 knife bmcs ad list (options)
+knife bmcs compartment list (options)
 knife bmcs image list (options)
 knife bmcs server create (options)
 knife bmcs server list (options)

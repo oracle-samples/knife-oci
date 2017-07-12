@@ -46,7 +46,7 @@ def private_key_file
 end
 
 RSpec.configure do |rspec|
-  # Calls to exit(1) produce a SystemExit, which will cause rspec to stop exectuing any remaining tests and report success.
+  # Calls to exit(1) produce a SystemExit, which will cause rspec to stop executing any remaining tests and report success.
   # This will convert SystemExit to a RuntimeError such that tests will fail in that case.
   rspec.around(:example) do |ex|
     begin
