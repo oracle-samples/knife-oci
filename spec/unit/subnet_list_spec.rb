@@ -5,6 +5,7 @@ require 'chef/knife/bmcs_subnet_list'
 require 'oraclebmc'
 require './spec/spec_helper'
 
+# rubocop:disable Metrics/AbcSize
 def run_tests(output_format)
   receive_type = output_format == 'summary' ? :list : :output
 
