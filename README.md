@@ -14,8 +14,12 @@ The project is open source and maintained by Oracle Corp. The home page for the 
   `knife bmcs server list`
 - List the images in a compartment:
 `knife bmcs image list`
+- List the VCNs in a compartment:
+  `knife bmcs vcn list`
+- List the subnets in a VCN:
+  `knife bmcs subnet list`
 - List the shapes that may be used for a particular image type:
- `knife bmcs shape list`
+  `knife bmcs shape list`
 - List the availability domains for your tenancy:
   `knife bmcs ad list`
 

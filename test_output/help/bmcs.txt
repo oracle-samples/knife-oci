@@ -8,6 +8,8 @@ knife bmcs image list (options)
 knife bmcs server create (options)
 knife bmcs server list (options)
 knife bmcs shape list (options)
+knife bmcs subnet list (options)
+knife bmcs vcn list (options)
 
 
 
