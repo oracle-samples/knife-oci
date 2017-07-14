@@ -6,7 +6,7 @@ require 'chef/knife/bmcs_helper'
 
 class Chef
   class Knife
-    # List BMCS VCNs. Note that this list all VCNs in a compartment, not just those that are set up as Chef nodes.
+    # List BMCS VCNs. Note that this lists all VCNs in a compartment, not just those that are set up as Chef nodes.
     class BmcsVcnList < Knife
       banner 'knife bmcs vcn list (options)'
 

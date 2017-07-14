@@ -6,7 +6,7 @@ require 'chef/knife/bmcs_helper'
 
 class Chef
   class Knife
-    # List BMCS subnets. Note that this list all VCNs in a compartment, not just those that are set up as Chef nodes.
+    # List BMCS subnets in a VCN.
     class BmcsSubnetList < Knife
       banner 'knife bmcs subnet list (options)'
 
