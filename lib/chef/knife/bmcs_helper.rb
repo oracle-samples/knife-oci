@@ -48,7 +48,7 @@ class Chef
           params[param].nil?
         end
 
-        error_and_exit("Missing the following required parameters: #{missing_params.join(', ').tr!('_', '-')}") unless missing_params.empty?
+        error_and_exit("Missing the following required parameters: #{missing_params.join(', ').tr('_', '-')}") unless missing_params.empty?
       end
 
       def warn_if_page_is_truncated(response)
