@@ -22,7 +22,8 @@ end
 describe 'list commands' do
   let(:params_only_bmcs_config) do
     {
-      '--bmcs-config-file' => config_file_path
+      '--bmcs-config-file' => config_file_path,
+      '--bmcs-profile' => profile
     }
   end
 
@@ -35,6 +36,7 @@ describe 'list commands' do
   let(:params_with_compartment) do
     {
       '--bmcs-config-file' => config_file_path,
+      '--bmcs-profile' => profile,
       '--compartment-id' => compartment_id
     }
   end

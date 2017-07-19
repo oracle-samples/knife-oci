@@ -5,3 +5,5 @@
 chef-repo/
 dist/
 Gemfile.lock
+test_output/list_commands
+test_output/server_create
