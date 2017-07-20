@@ -5,6 +5,7 @@ require 'chef/knife/bmcs_compartment_list'
 require 'oraclebmc'
 require './spec/spec_helper'
 
+# rubocop:disable Metrics/AbcSize
 def run_tests(output_format)
   receive_type = output_format == 'summary' ? :list : :output
 
@@ -53,6 +54,19 @@ def run_tests(output_format)
 
     knife_bmcs_compartment_list.run
   end
+
+  it "does not show warning #{output_format} when next page is empty" do
+    knife_bmcs_compartment_list.config = config
+    knife_bmcs_compartment_list.config[:format] = output_format
+    response = multi_response
+    response.headers['opc-next-page'] = 'page2'
+
+    allow(knife_bmcs_compartment_list.identity_client).to receive(:list_compartments).and_return(response, empty_response)
+    expect(knife_bmcs_compartment_list.ui).to receive(receive_type)
+    expect(knife_bmcs_compartment_list.ui).to_not receive(:warn)
+
+    knife_bmcs_compartment_list.run
+  end
 end
 
 describe Chef::Knife::BmcsCompartmentList do
@@ -78,17 +92,18 @@ describe Chef::Knife::BmcsCompartmentList do
 
     let(:multi_response) do
       double(data: [compartment, compartment],
-             headers: {})
+             headers: { 'opc-next-page' => 'aaaaaaaaaaaaaaaa' })
     end
 
     let(:empty_response) do
       double(data: [],
-             headers: {})
+             headers: { 'opc-next-page' => 'aaaaaaaaaaaaaaaa' })
     end
 
     let(:nil_response) do
       double(data: nil,
-             headers: {})
+             next_page: 'aaaaaaaaaaaaaaaa',
+             headers: { 'opc-next-page' => 'aaaaaaaaaaaaaaaa' })
     end
 
     run_tests('summary')
