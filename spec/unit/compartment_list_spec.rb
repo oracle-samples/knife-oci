@@ -102,7 +102,6 @@ describe Chef::Knife::BmcsCompartmentList do
 
     let(:nil_response) do
       double(data: nil,
-             next_page: 'aaaaaaaaaaaaaaaa',
              headers: { 'opc-next-page' => 'aaaaaaaaaaaaaaaa' })
     end
 
