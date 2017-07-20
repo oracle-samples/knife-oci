@@ -21,12 +21,12 @@ describe Chef::Knife::BmcsServerDelete do
       nil
     end
 
-    let (:get_server_ok_response) do
+    let(:get_server_ok_response) do
       double(data: instance,
              headers: {})
     end
 
-    let (:get_server_terminated_response) do
+    let(:get_server_terminated_response) do
       double(data: terminated_instance,
              headers: {})
     end
