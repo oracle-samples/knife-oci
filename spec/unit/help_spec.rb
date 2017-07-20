@@ -34,4 +34,8 @@ describe 'show help for each command' do
   it 'server list displays a help message' do
     write_help('server list', 'server_list')
   end
+
+  it 'compartment list displays a help message' do
+    write_help('compartment list', 'compartment_list')
+  end
 end
