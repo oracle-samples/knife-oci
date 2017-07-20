@@ -21,6 +21,16 @@ describe Chef::Knife::BmcsServerDelete do
       nil
     end
 
+    let (:get_server_ok_response) do
+      double(data: instance,
+             headers: {})
+    end
+
+    let (:get_server_terminated_response) do
+      double(data: terminated_instance,
+             headers: {})
+    end
+
     let(:instance) do
       double(availability_domain: 'ad1',
              compartment_id: 'compartmentA',
@@ -54,7 +64,7 @@ describe Chef::Knife::BmcsServerDelete do
       knife_bmcs_server_delete.config = config
 
       allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(instance)
+      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       expect(knife_bmcs_server_delete.ui).to receive(:msg).with('Initiated delete of instance ocid1.instance.oc1.test')
       expect(knife_bmcs_server_delete.ui).not_to receive(:warn)
 
@@ -84,7 +94,7 @@ describe Chef::Knife::BmcsServerDelete do
     it 'should fail if instance already terminated' do
       knife_bmcs_server_delete.config = config
 
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(terminated_instance)
+      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_terminated_response)
       expect(knife_bmcs_server_delete.compute_client).to_not receive(:terminate_instance)
       expect(knife_bmcs_server_delete.ui).to receive(:error).with('Instance is already in terminated state')
       expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
@@ -95,7 +105,7 @@ describe Chef::Knife::BmcsServerDelete do
       knife_bmcs_server_delete.config[:wait] = '60'
 
       allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(instance)
+      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       expect(knife_bmcs_server_delete).to receive(:wait_for_instance_terminated)
 
       knife_bmcs_server_delete.run
@@ -106,7 +116,7 @@ describe Chef::Knife::BmcsServerDelete do
       knife_bmcs_server_delete.config[:wait] = nil
 
       allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(instance)
+      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       expect(knife_bmcs_server_delete).to_not receive(:wait_for_instance_terminated)
 
       knife_bmcs_server_delete.run
