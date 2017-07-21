@@ -60,7 +60,7 @@ describe Chef::Knife::BmcsServerCreate do
 
     it 'should show error when file not found' do
       knife_bmcs_server_create.config[:user_data_file] = 'notarealfile.dat'
-      expect { knife_bmcs_server_create.get_file_content(:user_data_file) }.to raise_error
+      expect { knife_bmcs_server_create.get_file_content(:user_data_file) }.to raise_error(Errno::ENOENT)
     end
 
     it 'should expand file paths' do
@@ -88,13 +88,13 @@ describe Chef::Knife::BmcsServerCreate do
 
     it 'should show error when file not found' do
       knife_bmcs_server_create.config[:bmcs_config_file] = 'notarealconfigfile'
-      expect { knife_bmcs_server_create.bmcs_config }.to raise_error
+      expect { knife_bmcs_server_create.bmcs_config }.to raise_error.with_message(/Config file does not exist/)
     end
 
     it 'should show error when profile not found' do
       knife_bmcs_server_create.config[:bmcs_config_file] = DUMMY_CONFIG_FILE
       knife_bmcs_server_create.config[:bmcs_profile] = 'notarealprofile'
-      expect { knife_bmcs_server_create.bmcs_config }.to raise_error
+      expect { knife_bmcs_server_create.bmcs_config }.to raise_error.with_message(/Profile not found/)
     end
 
     it 'should add to user agent' do
