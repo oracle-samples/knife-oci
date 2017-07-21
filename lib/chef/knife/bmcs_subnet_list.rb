@@ -32,8 +32,8 @@ class Chef
 
         response = network_client.list_subnets(compartment_id, config[:vcn_id], options)
 
-        display_list(response, ['Display Name', 'ID', 'CIDR Block', 'V-Router IP', 'State']) do |item|
-          [item.display_name, item.id, item.cidr_block, item.virtual_router_ip, item.lifecycle_state]
+        display_list(response, ['Display Name', 'ID', 'CIDR Block', 'Availability Domain', 'State']) do |item|
+          [item.display_name, item.id, item.cidr_block, item.availability_domain, item.lifecycle_state]
         end
       end
     end

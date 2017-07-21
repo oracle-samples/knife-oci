@@ -78,7 +78,7 @@ describe Chef::Knife::BmcsSubnetList do
              id: 'ocid1.subnet.oc1..test',
              display_name: 'subnet_1',
              cidr_block: '10.0.0.0/24',
-             virtual_router_ip: '10.0.0.1',
+             availability_domain: 'test-ad',
              lifecycle_state: 'ACTIVE',
              to_hash: { 'display_name' => 'hash_value' })
     end
