@@ -56,7 +56,11 @@ class Chef
       end
 
       def display_list(response, columns)
-        list = response.data
+        list = if response.data.nil?
+                 []
+               else
+                 response.data.is_a?(Array) ? response.data : [response.data]
+               end
         list_for_display = []
 
         if config[:format] == 'summary'
