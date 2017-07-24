@@ -38,4 +38,12 @@ describe 'show help for each command' do
   it 'compartment list displays a help message' do
     write_help('compartment list', 'compartment_list')
   end
+
+  it 'subnet list displays a help message' do
+    write_help('subnet list', 'subnet_list')
+  end
+
+  it 'vcn list displays a help message' do
+    write_help('vcn list', 'vcn_list')
+  end
 end
