@@ -13,7 +13,7 @@ def run_tests(output_format)
     knife_bmcs_compartment_list.config = config
     knife_bmcs_compartment_list.config[:format] = output_format
 
-    allow(knife_bmcs_compartment_list.identity_client).to receive(:list_compartments).and_return(multi_response)
+    allow(knife_bmcs_compartment_list.identity_client).to receive(:list_compartments).and_return(multi_response, empty_response)
     expect(knife_bmcs_compartment_list.ui).to receive(receive_type)
     expect(knife_bmcs_compartment_list.ui).not_to receive(:warn)
 
