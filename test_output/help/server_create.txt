@@ -1,6 +1,7 @@
 knife bmcs server create --help
 
 knife bmcs server create (options)
+        --assign-public-ip BOOLEAN   Whether the default VNIC attached to this instance should be assigned a public IP address. Defaults to whether the subnet is public or private.
         --availability-domain AD     The Availability Domain of the instance.
         --bmcs-config-file FILE      The path to the Oracle BMCS config file. Default: ~/.oraclebmc/config
         --bmcs-profile PROFILE       The profile to load from the Oracle BMCS config file. Default: DEFAULT
@@ -29,6 +30,7 @@ knife bmcs server create (options)
         --metadata METADATA          Custom metadata key/value pairs in JSON format.
     -u, --user USER                  API Client Username
         --print-after                Show the data after a destructive operation
+        --private-ip TEXT            A private IP address of your choice to assign to the default VNIC attached to this instance.
     -r, --run-list RUN_LIST          A comma-separated list of roles or recipes.
         --shape SHAPE                The shape of an instance. The shape determines the number of CPUs, amount of memory, and other resources allocated to the instance.
         --ssh-authorized-keys-file FILE
