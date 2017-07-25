@@ -34,6 +34,8 @@ class Chef
         validate_required_params(%i[instance_id], config)
         wait_for = validate_wait
 
+        confirm_deletion
+
         check_can_access_instance(config[:instance_id])
 
         terminate_instance(config[:instance_id])
@@ -91,6 +93,11 @@ class Chef
         }
         opts[:max_wait_seconds] = wait_for if wait_for > 0
         opts
+      end
+
+      def confirm_deletion
+        return if confirm('Delete server? (y/n)')
+        error_and_exit 'Server delete canceled.'
       end
 
       def show_progress
