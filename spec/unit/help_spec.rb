@@ -19,6 +19,10 @@ describe 'show help for each command' do
     write_help('server create', 'server_create')
   end
 
+  it 'server delete displays a help message' do
+    write_help('server delete', 'server_delete')
+  end
+
   it 'image list displays a help message' do
     write_help('image list', 'image_list')
   end
