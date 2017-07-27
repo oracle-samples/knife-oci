@@ -33,50 +33,42 @@ describe 'list commands' do
     }
   end
 
-  let(:params_with_compartment) do
-    {
-      '--bmcs-config-file' => config_file_path,
-      '--bmcs-profile' => profile,
-      '--compartment-id' => compartment_id
-    }
-  end
-
   it 'can list availability domains' do
     shell = run_command('ad list', params_only_bmcs_config, 'ad_list')
     expect(shell.stdout).to include('AD-2')
   end
 
-  it 'can point to bmcs config and compartment from knife config' do
+  it 'can point to bmcs config from knife config' do
     shell = run_command('image list', params_only_knife_config, 'image_list_with_knife_config')
     expect(shell.stdout).to include('Display Name')
     expect(shell.stdout).to include('ocid1.image')
   end
 
   it 'can list images' do
-    shell = run_command('image list', params_with_compartment, 'image_list')
+    shell = run_command('image list', params_only_bmcs_config, 'image_list')
     expect(shell.stdout).to include('Display Name')
     expect(shell.stdout).to include('ocid1.image')
     expect(shell.stderr).not_to include('This list has been truncated.')
   end
 
   it 'can list images with limit' do
-    params_with_compartment['--limit'] = '1'
-    shell = run_command('image list', params_with_compartment, 'image_list_with_limit')
+    params_only_bmcs_config['--limit'] = '1'
+    shell = run_command('image list', params_only_bmcs_config, 'image_list_with_limit')
     expect(shell.stdout).to include('Display Name')
     expect(shell.stdout).to include('ocid1.image')
     expect(shell.stderr).to include('This list has been truncated.')
   end
 
-  it 'can list images with altnernate format' do
-    params_with_compartment['--format'] = 'text'
-    shell = run_command('image list', params_with_compartment, 'image_list_with_text_format')
+  it 'can list images with alternate format' do
+    params_only_bmcs_config['--format'] = 'text'
+    shell = run_command('image list', params_only_bmcs_config, 'image_list_with_text_format')
     expect(shell.stdout).not_to include('Display Name')
     expect(shell.stdout).to include('createImageAllowed:')
     expect(shell.stderr).not_to include('This list has been truncated.')
   end
 
   it 'can list instances' do
-    shell = run_command('server list', params_with_compartment, 'server_list')
+    shell = run_command('server list', params_only_bmcs_config, 'server_list')
     expect(shell.stdout).to include('Display Name')
     expect(shell.stdout).to include('State')
     expect(shell.stderr).not_to include('This list has been truncated.')

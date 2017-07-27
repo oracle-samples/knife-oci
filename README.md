@@ -51,9 +51,9 @@ By default, the config file will be loaded from ~/.oraclebmc/config. Alternate l
 
 ## Setting the Compartment
 
-Each BMCS command requires a compartment ID, which will default to the root compartment. If you do not have the correct permissions and you do not specify a different compartment, then you will receive an authorization error.
+Each BMCS command requires a compartment ID, which will default to the root compartment. If you do not have the correct permissions then you will receive an authorization error.
 
-A compartment ID can be provided with each BMCS command using `--compartment-id`, or it can be provided in your knife.rb. If a compartment ID is set in both places, then the ID specified in the command will take precedence.
+A compartment ID can be provided in your knife.rb.
 
 ## Knife.rb values
 
@@ -69,7 +69,6 @@ The following example shows how to launch and bootstrap an Oracle Linux image:
 
     knife bmcs server create
       --availability-domain 'kIdk:PHX-AD-1'
-      --compartment-id 'ocidv1:tenancy:oc1:phx:1460406592660:aaaaaaaab4faofrfkxecohhjuivjq26a13'
       --image-id 'ocid1.image.oc1.phx.aaaaaaaaqutj4qjxihpl4mboabsa27mrpusygv6gurp47katabcvljmq3puq'
       --shape 'VM.Standard1.1'
       --subnet-id 'ocid1.subnet.oc1.phx.aaaaaaaaxlc5cv7ewqr343ms4lvcpxr4lznsf4cbs2565abcm23d3cfebrex'

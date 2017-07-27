@@ -34,7 +34,6 @@ describe 'server create command' do
   let(:min_params) do
     {
       '--availability-domain' => availability_domain,
-      '--compartment-id' => compartment_id,
       '--subnet-id' => subnet_id,
       '--shape' => shape,
       '--image-id' => 'Must be set for each run.',

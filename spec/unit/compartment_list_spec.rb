@@ -20,6 +20,19 @@ def run_tests(output_format)
     knife_bmcs_compartment_list.run
   end
 
+  it "use tenancy not compartment id #{output_format}" do
+    knife_bmcs_compartment_list.config = config
+    knife_bmcs_compartment_list.config[:format] = output_format
+
+    allow(knife_bmcs_compartment_list.identity_client).to receive(:list_compartments).and_return(multi_response, empty_response)
+    expect(knife_bmcs_compartment_list).not_to receive(:compartment_id)
+    expect(knife_bmcs_compartment_list.bmcs_config).to receive(:tenancy).twice
+    expect(knife_bmcs_compartment_list.ui).to receive(receive_type)
+    expect(knife_bmcs_compartment_list.ui).not_to receive(:warn)
+
+    knife_bmcs_compartment_list.run
+  end
+
   it "compartment shows #{output_format} with nil list" do
     knife_bmcs_compartment_list.config = config
     knife_bmcs_compartment_list.config[:format] = output_format
@@ -75,7 +88,6 @@ describe Chef::Knife::BmcsCompartmentList do
   describe 'list compartment' do
     let(:config) do
       {
-        compartment_id: 'compartmentA',
         bmcs_config_file: DUMMY_CONFIG_FILE,
         format: 'summary'
       }

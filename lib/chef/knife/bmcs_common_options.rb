@@ -16,10 +16,6 @@ class Chef
           option :bmcs_profile,
                  long: '--bmcs-profile PROFILE',
                  description: 'The profile to load from the Oracle BMCS config file. Default: DEFAULT'
-
-          option :compartment_id,
-                 long: '--compartment-id COMPARTMENT',
-                 description: 'The OCID of the compartment.'
         end
       end
     end

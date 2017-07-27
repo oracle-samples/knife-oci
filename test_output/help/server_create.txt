@@ -10,7 +10,6 @@ knife bmcs server create (options)
         --chef-zero-port PORT        Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works.
     -k, --key KEY                    API Client Key
         --[no-]color                 Use colored output, defaults to enabled
-        --compartment-id COMPARTMENT The OCID of the compartment.
     -c, --config CONFIG              The configuration file to use
         --config-option OPTION=VALUE Override a single configuration option
         --defaults                   Accept default values for all questions
