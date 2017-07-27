@@ -13,7 +13,8 @@ describe Chef::Knife::BmcsServerDelete do
       {
         compartment_id: 'compartmentA',
         bmcs_config_file: DUMMY_CONFIG_FILE,
-        instance_id: 'ocid1.instance.oc1.test'
+        instance_id: 'ocid1.instance.oc1.test',
+        yes: true
       }
     end
 
@@ -107,6 +108,7 @@ describe Chef::Knife::BmcsServerDelete do
       allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
       allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       expect(knife_bmcs_server_delete).to receive(:wait_for_instance_terminated)
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).with('Initiated delete of instance ocid1.instance.oc1.test')
 
       knife_bmcs_server_delete.run
     end
@@ -118,8 +120,48 @@ describe Chef::Knife::BmcsServerDelete do
       allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
       allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       expect(knife_bmcs_server_delete).to_not receive(:wait_for_instance_terminated)
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).with('Initiated delete of instance ocid1.instance.oc1.test')
 
       knife_bmcs_server_delete.run
+    end
+
+    it 'negative delete confirmation should exit' do
+      knife_bmcs_server_delete.config = config
+      knife_bmcs_server_delete.config.delete(:yes)
+
+      allow(knife_bmcs_server_delete.ui).to receive(:ask).and_return('n').exactly(1).times
+      expect(knife_bmcs_server_delete.compute_client).to_not receive(:terminate_instance)
+      expect(knife_bmcs_server_delete.compute_client).to_not receive(:get_instance)
+      expect(knife_bmcs_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
+      expect(knife_bmcs_server_delete.ui).to receive(:error).with('Server delete canceled.')
+      expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
+    end
+
+    it 'positive delete confirmation should proceed' do
+      knife_bmcs_server_delete.config = config
+      knife_bmcs_server_delete.config.delete(:yes)
+
+      allow(knife_bmcs_server_delete.ui).to receive(:ask).and_return('Y').exactly(1).times
+      allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
+      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      expect(knife_bmcs_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).with('Initiated delete of instance ocid1.instance.oc1.test')
+      expect(knife_bmcs_server_delete.ui).not_to receive(:warn)
+
+      knife_bmcs_server_delete.run
+    end
+
+    it 'delete confirmation with invalid response should retry limited times' do
+      knife_bmcs_server_delete.config = config
+      knife_bmcs_server_delete.config.delete(:yes)
+
+      allow(knife_bmcs_server_delete.ui).to receive(:ask).and_return('zn').exactly(3).times
+      expect(knife_bmcs_server_delete.compute_client).to_not receive(:terminate_instance)
+      expect(knife_bmcs_server_delete.compute_client).to_not receive(:get_instance)
+      expect(knife_bmcs_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
+      expect(knife_bmcs_server_delete.ui).to receive(:warn).with('Valid responses are ["yes", "no", "y", "n"]').exactly(3).times
+      expect(knife_bmcs_server_delete.ui).to receive(:error).with('Server delete canceled.')
+      expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
     end
   end
 end
