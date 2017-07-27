@@ -95,6 +95,20 @@ class Chef
 
         warn_if_page_is_truncated(response) if warn_on_truncated
       end
+
+      # Return a true or false with the confirmation result.
+      # Note: user prompt is bypassed with --yes to confirm automatically.
+      def confirm(prompt)
+        return true if config[:yes]
+        valid_responses = %w[yes no y n]
+        response = nil
+        3.times do
+          response = ui.ask(prompt).downcase
+          break if valid_responses.include? response
+          ui.warn "Valid responses are #{valid_responses}"
+        end
+        response.match(/^y/)
+      end
     end
   end
 end

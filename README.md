@@ -9,13 +9,15 @@ The project is open source and maintained by Oracle Corp. The home page for the 
 ## Commands
 
 - Launch a BMCS instance and bootstrap it as a Chef node:
- `knife bmcs server create`
+  `knife bmcs server create`
 - List BMCS compartments.
   `knife bmcs compartment list`
+- Delete a BMCS instance:
+  `knife bmcs server delete`
 - List BMCS instances in a given compartment. **Note:** All instances in the compartment are returned, not only those that are Chef nodes:
   `knife bmcs server list`
 - List the images in a compartment:
-`knife bmcs image list`
+  `knife bmcs image list`
 - List the VCNs in a compartment:
   `knife bmcs vcn list`
 - List the subnets in a VCN:
