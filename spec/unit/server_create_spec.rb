@@ -200,14 +200,21 @@ describe Chef::Knife::BmcsServerCreate do
       }
     end
 
-    it 'bool_arg should properly categorize input data' do
-      expect(knife_bmcs_server_create.bool_arg('yes')).to equal(true)
-      expect(knife_bmcs_server_create.bool_arg('true')).to equal(true)
-      expect(knife_bmcs_server_create.bool_arg('false')).to equal(false)
-      expect(knife_bmcs_server_create.bool_arg('no')).to equal(false)
-      expect(knife_bmcs_server_create.bool_arg(nil)).to equal(nil)
-      expect { knife_bmcs_server_create.bool_arg(true) }.to raise_error(SystemExit)
-      expect { knife_bmcs_server_create.bool_arg('invalid-input') }.to raise_error(SystemExit)
+    context 'bool_arg should properly categorize input data' do
+      it 'handles valid input data' do
+        expect(knife_bmcs_server_create.bool_arg('yes')).to equal(true)
+        expect(knife_bmcs_server_create.bool_arg('true')).to equal(true)
+        expect(knife_bmcs_server_create.bool_arg('false')).to equal(false)
+        expect(knife_bmcs_server_create.bool_arg('no')).to equal(false)
+        expect(knife_bmcs_server_create.bool_arg(nil)).to equal(nil)
+      end
+      it 'handles invalid input data' do
+        expect(knife_bmcs_server_create.ui).to receive(:error).with('Boolean arguments must be one of: yes, no, true, false')
+        expect { knife_bmcs_server_create.bool_arg('invalid-input') }.to raise_error(SystemExit)
+
+        expect(knife_bmcs_server_create.ui).to receive(:error).with('Boolean arguments must be one of: yes, no, true, false')
+        expect { knife_bmcs_server_create.bool_arg(true) }.to raise_error(SystemExit)
+      end
     end
 
     it 'should ensure vnic details are used' do
@@ -246,7 +253,16 @@ describe Chef::Knife::BmcsServerCreate do
       knife_bmcs_server_create.config[:assign_public_ip] = 'true'
       expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '123.456.789.101'
 
+      knife_bmcs_server_create.config[:assign_public_ip] = 'true'
+      knife_bmcs_server_create.config[:use_private_ip] = true
+      expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '10.1.2.3'
+
       knife_bmcs_server_create.config.delete(:assign_public_ip)
+      knife_bmcs_server_create.config.delete(:use_private_ip)
+      expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '123.456.789.101'
+
+      knife_bmcs_server_create.config.delete(:assign_public_ip)
+      knife_bmcs_server_create.config[:use_private_ip] = false
       expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '123.456.789.101'
     end
   end

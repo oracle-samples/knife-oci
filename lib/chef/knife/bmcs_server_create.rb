@@ -74,6 +74,11 @@ class Chef
              long: '--private-ip TEXT',
              description: 'A private IP address of your choice to assign to the default VNIC attached to this instance.'
 
+      option :use_private_ip,
+             long: '--use-private-ip',
+             description: 'Force the use of the private IP address when running the bootstrap.',
+             default: false
+
       option :subnet_id,
              long: '--subnet-id SUBNET',
              description: 'The OCID of the subnet.'
@@ -187,7 +192,7 @@ class Chef
       end
 
       def get_bootstrap_ip(vnic)
-        # TODO: Consider adding a use_private_ip option.
+        return vnic.private_ip if config[:use_private_ip]
         bool_arg(config[:assign_public_ip]) == false ? vnic.private_ip : vnic.public_ip
       end
 
