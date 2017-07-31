@@ -188,6 +188,12 @@ describe Chef::Knife::BmcsServerCreate do
              hostname_label: 'myhostname')
     end
 
+    let(:vnic_no_public) do
+      double(public_ip: nil,
+             private_ip: '10.1.2.3',
+             hostname_label: 'myhostname')
+    end
+
     let(:config) do
       {
         availability_domain: 'ad1',
@@ -244,26 +250,61 @@ describe Chef::Knife::BmcsServerCreate do
       knife_bmcs_server_create.run
     end
 
-    it 'get_bootstrap_ip chooses correct interface' do
-      knife_bmcs_server_create.config = config
+    context 'when assigning a public ip is requested' do
+      it 'bootstraps from private ip when public ip not available' do
+        knife_bmcs_server_create.config = config
+        knife_bmcs_server_create.config[:assign_public_ip] = 'true'
+        expect(knife_bmcs_server_create.get_bootstrap_ip(vnic_no_public)).to eq '10.1.2.3'
+      end
 
-      knife_bmcs_server_create.config[:assign_public_ip] = 'false'
-      expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '10.1.2.3'
+      it 'bootstraps from public ip when available' do
+        knife_bmcs_server_create.config = config
+        knife_bmcs_server_create.config[:assign_public_ip] = 'true'
+        expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '123.456.789.101'
+      end
 
-      knife_bmcs_server_create.config[:assign_public_ip] = 'true'
-      expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '123.456.789.101'
+      it 'bootstraps from private ip when forced' do
+        knife_bmcs_server_create.config = config
+        knife_bmcs_server_create.config[:assign_public_ip] = 'true'
+        knife_bmcs_server_create.config[:use_private_ip] = true
+        expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '10.1.2.3'
+      end
+    end
 
-      knife_bmcs_server_create.config[:assign_public_ip] = 'true'
-      knife_bmcs_server_create.config[:use_private_ip] = true
-      expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '10.1.2.3'
+    context 'when assigning a public ip is not desired' do
+      it 'bootstraps from private ip when public ip not available' do
+        knife_bmcs_server_create.config = config
+        knife_bmcs_server_create.config[:assign_public_ip] = 'false'
+        expect(knife_bmcs_server_create.get_bootstrap_ip(vnic_no_public)).to eq '10.1.2.3'
+      end
 
-      knife_bmcs_server_create.config.delete(:assign_public_ip)
-      knife_bmcs_server_create.config.delete(:use_private_ip)
-      expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '123.456.789.101'
+      it 'bootstraps from private ip when forced' do
+        knife_bmcs_server_create.config = config
+        knife_bmcs_server_create.config[:assign_public_ip] = 'false'
+        knife_bmcs_server_create.config[:use_private_ip] = true
+        expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '10.1.2.3'
+      end
+    end
 
-      knife_bmcs_server_create.config.delete(:assign_public_ip)
-      knife_bmcs_server_create.config[:use_private_ip] = false
-      expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '123.456.789.101'
+    context 'when assigning public ip is default' do
+      it 'bootstraps from public ip when public ip available and default use private ip setting' do
+        knife_bmcs_server_create.config = config
+        knife_bmcs_server_create.config.delete(:assign_public_ip)
+        knife_bmcs_server_create.config.delete(:use_private_ip)
+        expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '123.456.789.101'
+      end
+
+      it 'bootstraps from public ip when public ip available and use private ip is false' do
+        knife_bmcs_server_create.config.delete(:assign_public_ip)
+        knife_bmcs_server_create.config[:use_private_ip] = false
+        expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '123.456.789.101'
+      end
+
+      it 'bootstraps from private ip when public ip available and use private ip is true' do
+        knife_bmcs_server_create.config.delete(:assign_public_ip)
+        knife_bmcs_server_create.config[:use_private_ip] = true
+        expect(knife_bmcs_server_create.get_bootstrap_ip(vnic)).to eq '10.1.2.3'
+      end
     end
   end
 end

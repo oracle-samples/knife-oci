@@ -193,7 +193,7 @@ class Chef
 
       def get_bootstrap_ip(vnic)
         return vnic.private_ip if config[:use_private_ip]
-        bool_arg(config[:assign_public_ip]) == false ? vnic.private_ip : vnic.public_ip
+        vnic.public_ip.to_s.empty? ? vnic.private_ip : vnic.public_ip
       end
 
       # Return true or false corresponding with boolean string passed in.
