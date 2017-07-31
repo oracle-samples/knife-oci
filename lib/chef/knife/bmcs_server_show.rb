@@ -32,6 +32,7 @@ class Chef
         return response
       end
 
+      # Holds information needed to display vnic information
       class VnicInfo
         def initialize(private_ip, public_ip, hostname_label)
           @private_ip = private_ip
@@ -39,15 +40,11 @@ class Chef
           @hostname_label = hostname_label
         end
 
-        def private_ip
-          @private_ip
-        end
-        def public_ip
-          @public_ip
-        end
-        def hostname_label
-          @hostname_label
-        end
+        attr_reader :private_ip
+
+        attr_reader :public_ip
+
+        attr_reader :hostname_label
       end
 
       def run
@@ -81,7 +78,8 @@ class Chef
           end
         end
 
-pp "vnic_array: [", vnic_array, "]"
+        pp 'vnic_array: [', vnic_array, ']'
+
         display_server_info(config, server.data, vnic_array)
       end
     end
