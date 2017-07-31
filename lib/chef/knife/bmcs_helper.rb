@@ -110,6 +110,24 @@ class Chef
         end
         response.match(/^y/)
       end
+
+      def show_value(key, value, color = :cyan)
+        ui.msg "#{ui.color(key, color)}: #{value}" if value && !value.to_s.empty?
+      end
+
+      def display_server_info(config, instance, vnics)
+        show_value('Display Name', instance.display_name)
+        show_value('Instance ID', instance.id)
+        show_value('Availability Domain', instance.availability_domain)
+        show_value('Compartment ID', instance.compartment_id)
+        show_value('Region', instance.region)
+        show_value('Image ID', instance.image_id)
+        show_value('Shape', instance.shape)
+        show_value('Public IP Address', vnics[0].public_ip)
+        show_value('Private IP Address', vnics[0].private_ip)
+        show_value('Hostname', vnics[0].hostname_label)
+        show_value('Node Name', config[:chef_node_name])
+      end
     end
   end
 end
