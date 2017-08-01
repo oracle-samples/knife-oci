@@ -11,7 +11,7 @@ class Chef
         includer.class_eval do
           option :region,
                  long: '--region REGION',
-                 description: 'The region to make calls against.  eg. us-ashburn-1'
+                 description: 'The region to make calls against.  (e.g., `us-ashburn-1`)'
 
           option :bmcs_config_file,
                  long: '--bmcs-config-file FILE',

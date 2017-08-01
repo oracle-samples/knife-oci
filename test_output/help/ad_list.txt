@@ -21,7 +21,7 @@ knife bmcs ad list (options)
     -z, --local-mode                 Point knife commands at local repository instead of server
     -u, --user USER                  API Client Username
         --print-after                Show the data after a destructive operation
-        --region REGION              The region to make calls against.  eg. us-ashburn-1
+        --region REGION              The region to make calls against.  (e.g., `us-ashburn-1`)
     -V, --verbose                    More verbose output. Use twice for max verbosity
     -v, --version                    Show chef version
     -y, --yes                        Say yes to all prompts for confirmation

@@ -29,7 +29,7 @@ knife bmcs server create (options)
         --metadata METADATA          Custom metadata key/value pairs in JSON format.
     -u, --user USER                  API Client Username
         --print-after                Show the data after a destructive operation
-        --region REGION              The region to make calls against.  eg. us-ashburn-1
+        --region REGION              The region to make calls against.  (e.g., `us-ashburn-1`)
     -r, --run-list RUN_LIST          A comma-separated list of roles or recipes.
         --shape SHAPE                The shape of an instance. The shape determines the number of CPUs, amount of memory, and other resources allocated to the instance.
         --ssh-authorized-keys-file FILE
