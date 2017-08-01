@@ -9,13 +9,15 @@ The project is open source and maintained by Oracle Corp. The home page for the 
 ## Commands
 
 - Launch a BMCS instance and bootstrap it as a Chef node:
- `knife bmcs server create`
+  `knife bmcs server create`
+- List BMCS compartments.
+  `knife bmcs compartment list`
 - Delete a BMCS instance:
   `knife bmcs server delete`
 - List BMCS instances in a given compartment. **Note:** All instances in the compartment are returned, not only those that are Chef nodes:
   `knife bmcs server list`
 - List the images in a compartment:
-`knife bmcs image list`
+  `knife bmcs image list`
 - List the VCNs in a compartment:
   `knife bmcs vcn list`
 - List the subnets in a VCN:
@@ -49,7 +51,7 @@ By default, the config file will be loaded from ~/.oraclebmc/config. Alternate l
 
 ## Setting the Compartment
 
-Each BMCS command requires a compartment ID, which will default to the root compartment. If you do not have the correct permissions and you do not specify a different compartment, then you will receive an authorization error.
+Most BMCS commands require a compartment ID, which will default to the root compartment. If you do not have the correct permissions and you do not specify a different compartment, then you will receive an authorization error.
 
 A compartment ID can be provided with each BMCS command using `--compartment-id`, or it can be provided in your knife.rb. If a compartment ID is set in both places, then the ID specified in the command will take precedence.
 

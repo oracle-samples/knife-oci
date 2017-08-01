@@ -20,7 +20,10 @@ class Chef
           option :bmcs_profile,
                  long: '--bmcs-profile PROFILE',
                  description: 'The profile to load from the Oracle BMCS config file. Default: DEFAULT'
-
+        end
+        # all commands except compartment list get a compartment-id option
+        return if includer.to_s == 'Chef::Knife::BmcsCompartmentList'
+        includer.class_eval do
           option :compartment_id,
                  long: '--compartment-id COMPARTMENT',
                  description: 'The OCID of the compartment.'

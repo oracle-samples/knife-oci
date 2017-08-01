@@ -56,7 +56,9 @@ class Chef
         ui.warn('This list has been truncated. To view more items, increase the limit.') if response.headers.include? 'opc-next-page'
       end
 
-      def display_list(response, columns)
+      # TODO: Method should be refactored to reduce complexity.
+      # rubocop:disable Metrics/PerceivedComplexity
+      def display_list(response, columns, warn_on_truncated: true)
         list = if response.data.nil?
                  []
                else
@@ -92,7 +94,7 @@ class Chef
           ui.output(list_for_display)
         end
 
-        warn_if_page_is_truncated(response)
+        warn_if_page_is_truncated(response) if warn_on_truncated
       end
 
       # Return a true or false with the confirmation result.

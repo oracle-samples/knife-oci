@@ -41,6 +41,12 @@ describe 'list commands' do
     }
   end
 
+  let(:params_help) do
+    {
+      '--help' => true
+    }
+  end
+
   it 'can list availability domains' do
     shell = run_command('ad list', params_only_bmcs_config, 'ad_list')
     expect(shell.stdout).to include('AD-2')
@@ -67,7 +73,7 @@ describe 'list commands' do
     expect(shell.stderr).to include('This list has been truncated.')
   end
 
-  it 'can list images with altnernate format' do
+  it 'can list images with alternate format' do
     params_with_compartment['--format'] = 'text'
     shell = run_command('image list', params_with_compartment, 'image_list_with_text_format')
     expect(shell.stdout).not_to include('Display Name')
@@ -80,5 +86,22 @@ describe 'list commands' do
     expect(shell.stdout).to include('Display Name')
     expect(shell.stdout).to include('State')
     expect(shell.stderr).not_to include('This list has been truncated.')
+  end
+
+  it 'can list compartments' do
+    shell = run_command('compartment list', params_only_bmcs_config, 'compartment_list')
+    expect(shell.stdout).to include('Display Name')
+    expect(shell.stdout).to include('ID')
+    expect(shell.stderr).not_to include('This list has been truncated.')
+  end
+
+  it 'compartment list help omits compartment-id param' do
+    shell = run_command('compartment list', params_help, 'compartment_list_help')
+    expect(shell.stdout).not_to include('compartment-id')
+  end
+
+  it 'server list help includes compartment-id param' do
+    shell = run_command('server list', params_help, 'server_list_help')
+    expect(shell.stdout).to include('compartment-id')
   end
 end
