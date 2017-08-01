@@ -75,6 +75,7 @@ The following example shows how to launch and bootstrap an Oracle Linux image:
       --display-name myinstance
       --identity-file ~/.keys/instance_keys
       --run-list 'recipe[my_cookbook::my_recipe]'
+      --region us-phoenix-1
 
 When using the `knife bmcs server create` command, you must specify a public key using `--ssh-authorized-keys-file` and the corresponding private key using `--identity-file`. For more information, see [Managing Key Pairs on Linux Instances](https://docs.us-phoenix-1.oraclecloud.com/Content/Compute/Tasks/managingkeypairs.htm).
 
