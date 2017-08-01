@@ -23,6 +23,7 @@ describe Chef::Knife::BmcsServerCreate do
     let(:vnic) do
       double(public_ip: '123.456.789.101',
              private_ip: '10.0.0.0',
+             is_primary: true,
              hostname_label: 'myhostname')
     end
 

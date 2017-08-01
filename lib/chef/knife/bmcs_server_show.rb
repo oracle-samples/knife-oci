@@ -24,11 +24,14 @@ class Chef
 
       # Holds information needed to display vnic information
       class VnicInfo
-        def initialize(private_ip, public_ip, hostname_label)
+        def initialize(is_primary, private_ip, public_ip, hostname_label)
+          @is_primary = is_primary
           @private_ip = private_ip
           @public_ip = public_ip
           @hostname_label = hostname_label
         end
+
+        attr_reader :is_primary
 
         attr_reader :private_ip
 
@@ -49,7 +52,8 @@ class Chef
           rescue OracleBMC::Errors::ServiceError => service_error
             raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
           else
-            vnic_array.push(VnicInfo.new(vnic_info.data.private_ip,
+            vnic_array.push(VnicInfo.new(vnic_info.data.is_primary,
+                                         vnic_info.data.private_ip,
                                          vnic_info.data.public_ip,
                                          vnic_info.data.hostname_label))
           end

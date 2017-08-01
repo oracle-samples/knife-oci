@@ -135,9 +135,10 @@ class Chef
         show_value('Image ID', instance.image_id)
         show_value('Shape', instance.shape)
         vnics.each_index do |index|
-          show_value("Public IP Address (vnic#{index})", vnics[index].public_ip)
-          show_value("Private IP Address (vnic#{index})", vnics[index].private_ip)
-          show_value("Hostname (vnic#{index})", vnics[index].hostname_label)
+          prefix = vnics[index].is_primary ? 'Primary' : 'Secondary'
+          show_value("#{prefix} Public IP Address", vnics[index].public_ip)
+          show_value("#{prefix} Private IP Address", vnics[index].private_ip)
+          show_value("#{prefix} Hostname", vnics[index].hostname_label)
         end
         show_value('Node Name', config[:chef_node_name])
       end
