@@ -9,6 +9,10 @@ class Chef
     module BmcsCommonOptions
       def self.included(includer)
         includer.class_eval do
+          option :region,
+                 long: '--region REGION',
+                 description: 'The region to make calls against.  (e.g., `us-ashburn-1`)'
+
           option :bmcs_config_file,
                  long: '--bmcs-config-file FILE',
                  description: 'The path to the Oracle BMCS config file. Default: ~/.oraclebmc/config'

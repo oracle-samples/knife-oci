@@ -31,6 +31,7 @@ knife bmcs server create (options)
     -u, --user USER                  API Client Username
         --print-after                Show the data after a destructive operation
         --private-ip TEXT            A private IP address of your choice to assign to the default VNIC attached to this instance.
+        --region REGION              The region to make calls against.  (e.g., `us-ashburn-1`)
     -r, --run-list RUN_LIST          A comma-separated list of roles or recipes.
         --shape SHAPE                The shape of an instance. The shape determines the number of CPUs, amount of memory, and other resources allocated to the instance.
         --ssh-authorized-keys-file FILE

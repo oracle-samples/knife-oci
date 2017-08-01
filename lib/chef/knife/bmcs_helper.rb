@@ -13,6 +13,7 @@ class Chef
           config_file = config[:bmcs_config_file] || Chef::Config[:knife][:bmcs_config_file] || OracleBMC::ConfigFileLoader::DEFAULT_CONFIG_FILE
           profile = config[:bmcs_profile] || Chef::Config[:knife][:bmcs_profile] || OracleBMC::ConfigFileLoader::DEFAULT_PROFILE
           @bmcs_config = OracleBMC::ConfigFileLoader.load_config(config_file_location: config_file, profile_name: profile)
+          @bmcs_config.region = config[:region] if config[:region]
 
           @bmcs_config.additional_user_agent = "Oracle-ChefKnifeBMCS/#{::Knife::BMCS::VERSION}"
         end
