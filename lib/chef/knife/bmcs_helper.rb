@@ -3,6 +3,7 @@
 require 'chef/knife'
 require 'knife-bmcs/version'
 
+# rubocop:disable Metrics/ModuleLength
 class Chef
   class Knife
     # BMCS helper module
@@ -111,6 +112,16 @@ class Chef
         response.match(/^y/)
       end
 
+      def check_can_access_instance(instance_id)
+        response = compute_client.get_instance(instance_id)
+        error_and_exit 'Instance is already in terminated state' if response && response.data && response.data.lifecycle_state == OracleBMC::Core::Models::Instance::LIFECYCLE_STATE_TERMINATED
+      rescue OracleBMC::Errors::ServiceError => service_error
+        raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+        error_and_exit 'Instance not authorized or not found'
+      else
+        return response
+      end
+
       def show_value(key, value, color = :cyan)
         ui.msg "#{ui.color(key, color)}: #{value}" if value && !value.to_s.empty?
       end
@@ -123,9 +134,11 @@ class Chef
         show_value('Region', instance.region)
         show_value('Image ID', instance.image_id)
         show_value('Shape', instance.shape)
-        show_value('Public IP Address', vnics[0].public_ip)
-        show_value('Private IP Address', vnics[0].private_ip)
-        show_value('Hostname', vnics[0].hostname_label)
+        vnics.each_index do |index|
+          show_value("Public IP Address (vnic#{index})", vnics[index].public_ip)
+          show_value("Private IP Address (vnic#{index})", vnics[index].private_ip)
+          show_value("Hostname (vnic#{index})", vnics[index].hostname_label)
+        end
         show_value('Node Name', config[:chef_node_name])
       end
     end
