@@ -67,19 +67,6 @@ class Chef
                           "is a convenience wrapper around the 'ssh_authorized_keys' field of the --metadata parameter. Populating both values in the same call will result "\
                           'in an error. For more info see documentation: https://docs.us-phoenix-1.oraclecloud.com/api/#/en/iaas/20160918/requests/LaunchInstanceDetails.'
 
-      option :assign_public_ip,
-             long: '--assign-public-ip BOOLEAN',
-             description: 'Whether the default VNIC attached to this instance should be assigned a public IP address. Defaults to whether the subnet is public or private.'
-
-      option :private_ip,
-             long: '--private-ip TEXT',
-             description: 'A private IP address of your choice to assign to the default VNIC attached to this instance.'
-
-      option :use_private_ip,
-             long: '--use-private-ip',
-             description: 'Force the use of the private IP address when running the bootstrap.',
-             default: false
-
       option :subnet_id,
              long: '--subnet-id SUBNET',
              description: 'The OCID of the subnet. (required)'
@@ -142,7 +129,7 @@ class Chef
         request.image_id = config[:image_id]
         request.metadata = metadata
         request.shape = config[:shape]
-        request.create_vnic_details = make_vnic_details
+        request.subnet_id = config[:subnet_id]
 
         response = compute_client.launch_instance(request)
         instance = response.data
@@ -174,7 +161,8 @@ class Chef
 
         ui.msg "Bootstrapping with node name '#{config[:chef_node_name]}'."
 
-        bootstrap(get_bootstrap_ip(vnic))
+        # TODO: Consider adding a use_private_ip option.
+        bootstrap(vnic.public_ip)
 
         ui.msg "Created and bootstrapped node '#{config[:chef_node_name]}'."
         ui.msg "\n"
@@ -190,36 +178,6 @@ class Chef
         show_value('Private IP Address', vnic.private_ip)
         show_value('Hostname', vnic.hostname_label)
         show_value('Node Name', config[:chef_node_name])
-      end
-
-      # Return CreateVnicDetails instance
-      def make_vnic_details
-        vnic_details = OracleBMC::Core::Models::CreateVnicDetails.new
-        vnic_details.assign_public_ip = bool_arg(config[:assign_public_ip]) if config[:assign_public_ip]
-        vnic_details.private_ip = config[:private_ip] if config[:private_ip]
-        vnic_details.subnet_id = config[:subnet_id]
-        vnic_details
-      end
-
-      def get_bootstrap_ip(vnic)
-        return vnic.private_ip if config[:use_private_ip]
-        vnic.public_ip.to_s.empty? ? vnic.private_ip : vnic.public_ip
-      end
-
-      # Return true or false corresponding with boolean string passed in.
-      # Return nil when input is nil.
-      # Error and exit if neither of the above.
-      def bool_arg(arg)
-        case arg
-        when 'yes', 'true'
-          true
-        when 'no', 'false'
-          false
-        when nil
-          nil
-        else
-          error_and_exit('Boolean arguments must be one of: yes, no, true, false')
-        end
       end
 
       def bootstrap(name)

@@ -1,7 +1,6 @@
 knife bmcs server create --help
 
 knife bmcs server create (options)
-        --assign-public-ip BOOLEAN   Whether the default VNIC attached to this instance should be assigned a public IP address. Defaults to whether the subnet is public or private.
         --availability-domain AD     The Availability Domain of the instance. (required)
         --bmcs-config-file FILE      The path to the Oracle BMCS config file. Default: ~/.oraclebmc/config
         --bmcs-profile PROFILE       The profile to load from the Oracle BMCS config file. Default: DEFAULT
@@ -30,7 +29,6 @@ knife bmcs server create (options)
         --metadata METADATA          Custom metadata key/value pairs in JSON format.
     -u, --user USER                  API Client Username
         --print-after                Show the data after a destructive operation
-        --private-ip TEXT            A private IP address of your choice to assign to the default VNIC attached to this instance.
         --region REGION              The region to make calls against.  (e.g., `us-ashburn-1`)
     -r, --run-list RUN_LIST          A comma-separated list of roles or recipes.
         --shape SHAPE                The shape of an instance. The shape determines the number of CPUs, amount of memory, and other resources allocated to the instance. (required)
@@ -39,7 +37,6 @@ knife bmcs server create (options)
     -P, --ssh-password PASSWORD      The SSH password
     -x, --ssh-user USERNAME          The SSH username. Defaults to opc.
         --subnet-id SUBNET           The OCID of the subnet. (required)
-        --use-private-ip             Force the use of the private IP address when running the bootstrap.
         --user-data-file FILE        A file containing data that Cloud-Init can use to run custom scripts or provide custom Cloud-Init configuration. This parameter is a convenience wrapper around the 'user_data' field of the --metadata parameter.  Populating both values in the same call will result in an error. For more info see Cloud-Init documentation: https://cloudinit.readthedocs.org/en/latest/topics/format.html.
     -V, --verbose                    More verbose output. Use twice for max verbosity
     -v, --version                    Show chef version
