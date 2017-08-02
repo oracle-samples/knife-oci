@@ -26,8 +26,9 @@ class Chef
         validate_required_params(%i[instance_id], config)
         vnic_array = []
         server = check_can_access_instance(config[:instance_id])
+        error_and_exit 'Unable to retrieve instance' unless server.data
         vnics = compute_client.list_vnic_attachments(compartment_id, instance_id: config[:instance_id])
-        vnics.data.each do |vnic|
+        vnics.data && vnics.data.each do |vnic|
           next unless vnic.lifecycle_state == 'ATTACHED'
           vnic_details = OracleBMC::Core::Models::Vnic.new
           begin
