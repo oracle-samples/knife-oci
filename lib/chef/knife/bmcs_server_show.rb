@@ -22,24 +22,6 @@ class Chef
              long: '--instance_id LIMIT',
              description: 'The OCID of the server to display.'
 
-      # Holds information needed to display vnic information
-      class VnicInfo
-        def initialize(is_primary, private_ip, public_ip, hostname_label)
-          @is_primary = is_primary
-          @private_ip = private_ip
-          @public_ip = public_ip
-          @hostname_label = hostname_label
-        end
-
-        attr_reader :is_primary
-
-        attr_reader :private_ip
-
-        attr_reader :public_ip
-
-        attr_reader :hostname_label
-      end
-
       def run
         validate_required_params(%i[instance_id], config)
         vnic_array = []
@@ -47,16 +29,18 @@ class Chef
         vnics = compute_client.list_vnic_attachments(compartment_id, instance_id: config[:instance_id])
         vnics.data.each do |vnic|
           next unless vnic.lifecycle_state == 'ATTACHED'
+          vnic_details = OracleBMC::Core::Models::Vnic.new
           begin
             vnic_info = network_client.get_vnic(vnic.vnic_id, {})
           rescue OracleBMC::Errors::ServiceError => service_error
             raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
           else
-            vnic_array.push(VnicInfo.new(vnic_info.data.is_primary,
-                                         vnic_info.data.private_ip,
-                                         vnic_info.data.public_ip,
-                                         vnic_info.data.hostname_label))
+            vnic_details.is_primary = vnic_info.data.is_primary
+            vnic_details.private_ip = vnic_info.data.private_ip
+            vnic_details.public_ip = vnic_info.data.public_ip
+            vnic_details.hostname_label = vnic_info.data.hostname_label
           end
+          vnic_array.push(vnic_details)
         end
 
         display_server_info(config, server.data, vnic_array)
