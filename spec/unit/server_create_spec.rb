@@ -39,7 +39,7 @@ describe Chef::Knife::BmcsServerCreate do
     end
 
     it 'should list missing required params' do
-      expect(knife_bmcs_server_create.ui).to receive(:error).with('Missing the following required parameters: availability-domain, image-id, shape, subnet-id, identity-file')
+      expect(knife_bmcs_server_create.ui).to receive(:error).with('Missing the following required parameters: availability-domain, image-id, shape, subnet-id, identity-file, ssh-authorized-keys-file')
       expect { knife_bmcs_server_create.run }.to raise_error(SystemExit)
     end
 

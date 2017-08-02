@@ -65,7 +65,7 @@ class Chef
              description: 'A file containing one or more public SSH keys to be included in the ~/.ssh/authorized_keys file for the default user on the instance. '\
                           'Use a newline character to separate multiple keys. The SSH keys must be in the format necessary for the authorized_keys file. This parameter '\
                           "is a convenience wrapper around the 'ssh_authorized_keys' field of the --metadata parameter. Populating both values in the same call will result "\
-                          'in an error. For more info see documentation: https://docs.us-phoenix-1.oraclecloud.com/api/#/en/iaas/20160918/requests/LaunchInstanceDetails.'
+                          'in an error. For more info see documentation: https://docs.us-phoenix-1.oraclecloud.com/api/#/en/iaas/20160918/requests/LaunchInstanceDetails. (required)'
 
       option :subnet_id,
              long: '--subnet-id SUBNET',
@@ -115,7 +115,7 @@ class Chef
 
       def run
         $stdout.sync = true
-        validate_required_params(%i[availability_domain image_id shape subnet_id identity_file], config)
+        validate_required_params(%i[availability_domain image_id shape subnet_id identity_file ssh_authorized_keys_file], config)
         validate_wait_options
 
         metadata = merge_metadata
