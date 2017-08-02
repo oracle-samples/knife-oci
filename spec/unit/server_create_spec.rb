@@ -70,6 +70,36 @@ describe Chef::Knife::BmcsServerCreate do
         expect(error.to_s).to include(ENV['USER'])
       end
     end
+
+    it 'should wait user specified durations for ssh and stabilize' do
+      knife_bmcs_server_create.config = min_config
+      knife_bmcs_server_create.config[:wait_to_stabilize] = 99
+      knife_bmcs_server_create.config[:wait_for_ssh_max] = 188
+
+      allow(knife_bmcs_server_create.compute_client).to receive(:launch_instance).and_return(double(data: instance))
+      allow(knife_bmcs_server_create).to receive(:wait_for_ssh).with(vnic.public_ip, 22, 2, 188).and_return(true)
+      allow(knife_bmcs_server_create).to receive(:wait_for_instance_running).and_return(instance)
+      allow(knife_bmcs_server_create).to receive(:get_vnic).and_return(vnic)
+      expect(Kernel).to receive(:sleep).with(99)
+      expect(knife_bmcs_server_create).to receive(:bootstrap)
+      expect(knife_bmcs_server_create.ui).to receive(:msg).at_least(10).times
+
+      knife_bmcs_server_create.run
+    end
+
+    it 'should wait default durations for ssh and stabilize' do
+      knife_bmcs_server_create.config = min_config
+
+      allow(knife_bmcs_server_create.compute_client).to receive(:launch_instance).and_return(double(data: instance))
+      allow(knife_bmcs_server_create).to receive(:wait_for_ssh).with(vnic.public_ip, 22, 2, 180).and_return(true)
+      allow(knife_bmcs_server_create).to receive(:wait_for_instance_running).and_return(instance)
+      allow(knife_bmcs_server_create).to receive(:get_vnic).and_return(vnic)
+      expect(Kernel).to receive(:sleep).with(40)
+      expect(knife_bmcs_server_create).to receive(:bootstrap)
+      expect(knife_bmcs_server_create.ui).to receive(:msg).at_least(10).times
+
+      knife_bmcs_server_create.run
+    end
   end
 
   describe 'bmcs_config' do
@@ -108,12 +138,16 @@ describe Chef::Knife::BmcsServerCreate do
     it 'should return false on timeout' do
       allow(knife_bmcs_server_create).to receive(:can_ssh).and_return(false)
       expect(knife_bmcs_server_create).to receive(:show_progress).at_least(10).times
+      expect(knife_bmcs_server_create.ui).to receive(:color).once.ordered.with('Waiting for ssh access...', :magenta)
+      expect(knife_bmcs_server_create.ui).to receive(:color).once.ordered.with("done\n", :magenta)
       expect(knife_bmcs_server_create.wait_for_ssh('111.111.111.111', 22, 0.01, 0.5)).to eq(false)
     end
 
     it 'should return immediately on success' do
       allow(knife_bmcs_server_create).to receive(:can_ssh).and_return(true)
       expect(knife_bmcs_server_create).to receive(:show_progress).exactly(0).times
+      expect(knife_bmcs_server_create.ui).to receive(:color).once.ordered.with('Waiting for ssh access...', :magenta)
+      expect(knife_bmcs_server_create.ui).to receive(:color).once.ordered.with("done\n", :magenta)
       expect(knife_bmcs_server_create.wait_for_ssh('111.111.111.111', 22, 0.01, 0.5)).to eq(true)
     end
   end
