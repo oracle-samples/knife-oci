@@ -23,7 +23,7 @@ class Chef
 
       option :instance_id,
              long: '--instance-id INSTANCE',
-             description: 'The OCID of the instance to be deleted.'
+             description: 'The OCID of the instance to be deleted. (required)'
 
       option :wait,
              long: '--wait SECONDS',

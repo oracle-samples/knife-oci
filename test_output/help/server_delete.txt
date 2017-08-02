@@ -17,7 +17,7 @@ knife bmcs server delete (options)
     -E, --environment ENVIRONMENT    Set the Chef environment (except for in searches, where this will be flagrantly ignored)
         --[no-]fips                  Enable fips mode
     -F, --format FORMAT              Which format to use for output
-        --instance-id INSTANCE       The OCID of the instance to be deleted.
+        --instance-id INSTANCE       The OCID of the instance to be deleted. (required)
         --[no-]listen                Whether a local mode (-z) server binds to a port
     -z, --local-mode                 Point knife commands at local repository instead of server
     -u, --user USER                  API Client Username
