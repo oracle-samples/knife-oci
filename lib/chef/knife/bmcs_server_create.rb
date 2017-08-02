@@ -8,7 +8,8 @@ require 'chef/knife/bmcs_common_options'
 SSH_PORT = 22
 
 WAIT_FOR_SSH_INTERVAL_SECONDS = 2
-WAIT_FOR_SSH_MAX_SECONDS = 180
+DEFAULT_WAIT_FOR_SSH_MAX_SECONDS = 180
+DEFAULT_WAIT_TO_STABILIZE_SECONDS = 40
 
 class Chef
   class Knife
@@ -117,9 +118,18 @@ class Chef
              proc: ->(o) { o.split(/[\s,]+/) },
              default: []
 
+      option :wait_to_stabilize,
+             long: '--wait-to-stabilize SECONDS',
+             description: "Duration to pause after SSH becomes reachable. Default: #{DEFAULT_WAIT_TO_STABILIZE_SECONDS}"
+
+      option :wait_for_ssh_max,
+             long: '--wait-for-ssh-max SECONDS',
+             description: "The maximum time to wait for SSH to become reachable. Default: #{DEFAULT_WAIT_FOR_SSH_MAX_SECONDS}"
+
       def run
         $stdout.sync = true
         validate_required_params(%i[availability_domain image_id shape subnet_id identity_file], config)
+        validate_wait_options
 
         metadata = merge_metadata
         error_and_exit 'SSH authorized keys must be specified.' unless metadata['ssh_authorized_keys']
@@ -154,7 +164,7 @@ class Chef
         show_value('Public IP Address', vnic.public_ip)
         show_value('Private IP Address', vnic.private_ip)
 
-        unless wait_for_ssh(vnic.public_ip, SSH_PORT, WAIT_FOR_SSH_INTERVAL_SECONDS, WAIT_FOR_SSH_MAX_SECONDS)
+        unless wait_for_ssh(vnic.public_ip, SSH_PORT, WAIT_FOR_SSH_INTERVAL_SECONDS, config[:wait_for_ssh_max])
           error_and_exit 'Timed out while waiting for SSH access.'
         end
 
@@ -229,11 +239,24 @@ class Chef
         bootstrap.run
       end
 
+      def validate_wait_option(p, default)
+        arg_name = "--#{p.to_s.tr('_', '-')}"
+        config[p] = config[p].to_s.empty? ? default : Integer(config[p])
+        error_and_exit "#{arg_name} must be 0 or greater" if config[p] < 0
+      rescue
+        error_and_exit "#{arg_name} must be numeric"
+      end
+
+      def validate_wait_options
+        validate_wait_option(:wait_to_stabilize, DEFAULT_WAIT_TO_STABILIZE_SECONDS)
+        validate_wait_option(:wait_for_ssh_max, DEFAULT_WAIT_FOR_SSH_MAX_SECONDS)
+      end
+
       def wait_to_stabilize
         # This extra sleep even after getting SSH access is necessary. It's not clear why, but without it we often get
         # errors about missing a password for ssh, or sometimes errors during bootstrapping. (Note that plugins for other
         # cloud providers have similar sleeps.)
-        sleep(40)
+        Kernel.sleep(config[:wait_to_stabilize])
       end
 
       def wait_for_ssh(hostname, ssh_port, interval_seconds, max_time_seconds)
