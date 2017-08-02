@@ -14,21 +14,6 @@ def run_tests(output_format)
     knife_bmcs_server_list.config[:format] = output_format
 
     allow(knife_bmcs_server_list.compute_client).to receive(:list_instances).and_return(response)
-    allow(knife_bmcs_server_list.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
-    allow(knife_bmcs_server_list.network_client).to receive(:get_vnic).and_return(double(data: vnic_info))
-    expect(knife_bmcs_server_list.ui).to receive(receive_type)
-    expect(knife_bmcs_server_list.ui).not_to receive(:warn)
-
-    knife_bmcs_server_list.run
-  end
-
-  it "shows #{output_format} view with failed get_vnic request" do
-    knife_bmcs_server_list.config = config
-    knife_bmcs_server_list.config[:format] = output_format
-
-    allow(knife_bmcs_server_list.compute_client).to receive(:list_instances).and_return(response)
-    allow(knife_bmcs_server_list.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
-    allow(knife_bmcs_server_list.network_client).to receive(:get_vnic).and_raise(OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized'))
     expect(knife_bmcs_server_list.ui).to receive(receive_type)
     expect(knife_bmcs_server_list.ui).not_to receive(:warn)
 
@@ -40,8 +25,6 @@ def run_tests(output_format)
     knife_bmcs_server_list.config[:format] = output_format
 
     allow(knife_bmcs_server_list.compute_client).to receive(:list_instances).and_return(empty_response)
-    allow(knife_bmcs_server_list.compute_client).to receive(:list_vnic_attachments).and_return(empty_response)
-    allow(knife_bmcs_server_list.network_client).to receive(:get_vnic).and_return(double(data: empty_response))
     expect(knife_bmcs_server_list.ui).to receive(receive_type)
     expect(knife_bmcs_server_list.ui).not_to receive(:warn)
 
@@ -65,8 +48,6 @@ def run_tests(output_format)
     response.headers['opc-next-page'] = 'page2'
 
     allow(knife_bmcs_server_list.compute_client).to receive(:list_instances).and_return(response)
-    allow(knife_bmcs_server_list.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
-    allow(knife_bmcs_server_list.network_client).to receive(:get_vnic).and_return(double(data: vnic_info))
     expect(knife_bmcs_server_list.ui).to receive(receive_type)
     expect(knife_bmcs_server_list.ui).to receive(:warn).with('This list has been truncated. To view more items, increase the limit.')
 
@@ -106,25 +87,6 @@ describe Chef::Knife::BmcsServerList do
     let(:nil_response) do
       double(data: nil,
              headers: {})
-    end
-
-    let(:vnic) do
-      double(instance_id: '12345',
-             vnic_id: '34567',
-             lifecycle_state: 'ATTACHED')
-    end
-
-    let(:vnics) do
-      double(data: [vnic],
-             headers: {})
-    end
-
-    let(:vnic_info) do
-      double(:vnic_info,
-             id: '34567',
-             private_ip: '10.0.0.1',
-             public_ip: '129.213.29.14',
-             lifecycle_state: 'ATTACHED')
     end
 
     run_tests('summary')
