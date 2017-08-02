@@ -36,7 +36,7 @@ class Chef
 
       option :availability_domain,
              long: '--availability-domain AD',
-             description: 'The Availability Domain of the instance.'
+             description: 'The Availability Domain of the instance. (required)'
 
       option :display_name,
              long: '--display-name NAME',
@@ -50,7 +50,7 @@ class Chef
 
       option :image_id,
              long: '--image-id IMAGE',
-             description: 'The OCID of the image used to boot the instance.'
+             description: 'The OCID of the image used to boot the instance. (required)'
 
       option :metadata,
              long: '--metadata METADATA',
@@ -58,7 +58,7 @@ class Chef
 
       option :shape,
              long: '--shape SHAPE',
-             description: 'The shape of an instance. The shape determines the number of CPUs, amount of memory, and other resources allocated to the instance.'
+             description: 'The shape of an instance. The shape determines the number of CPUs, amount of memory, and other resources allocated to the instance. (required)'
 
       option :ssh_authorized_keys_file,
              long: '--ssh-authorized-keys-file FILE',
@@ -82,7 +82,7 @@ class Chef
 
       option :subnet_id,
              long: '--subnet-id SUBNET',
-             description: 'The OCID of the subnet.'
+             description: 'The OCID of the subnet. (required)'
 
       option :user_data_file,
              long: '--user-data-file FILE',
@@ -104,7 +104,7 @@ class Chef
       option :identity_file,
              short: '-i FILE',
              long: '--identity-file IDENTITY_FILE',
-             description: 'The SSH identity file used for authentication. This must correspond to a public SSH key provided by --ssh-authorized-keys-file.'
+             description: 'The SSH identity file used for authentication. This must correspond to a public SSH key provided by --ssh-authorized-keys-file. (required)'
 
       option :chef_node_name,
              short: '-N NAME',

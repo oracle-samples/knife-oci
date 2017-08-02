@@ -23,7 +23,7 @@ class Chef
 
       option :vcn_id,
              long: '--vcn-id VCN',
-             description: 'The VCN ID to list subnets for.'
+             description: 'The VCN ID to list subnets for. (required)'
 
       def run
         validate_required_params(%i[vcn_id], config)

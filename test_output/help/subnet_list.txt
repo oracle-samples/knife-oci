@@ -23,7 +23,7 @@ knife bmcs subnet list (options)
     -u, --user USER                  API Client Username
         --print-after                Show the data after a destructive operation
         --region REGION              The region to make calls against.  (e.g., `us-ashburn-1`)
-        --vcn-id VCN                 The VCN ID to list subnets for.
+        --vcn-id VCN                 The VCN ID to list subnets for. (required)
     -V, --verbose                    More verbose output. Use twice for max verbosity
     -v, --version                    Show chef version
     -y, --yes                        Say yes to all prompts for confirmation
