@@ -26,8 +26,6 @@ class Chef
         options = {}
         options[:limit] = config[:limit] if config[:limit]
 
-        servers = {}
-
         response = compute_client.list_instances(compartment_id, options)
 
         display_list(response,
