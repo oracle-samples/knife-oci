@@ -30,18 +30,17 @@ class Chef
         vnics = compute_client.list_vnic_attachments(compartment_id, instance_id: config[:instance_id])
         vnics.data && vnics.data.each do |vnic|
           next unless vnic.lifecycle_state == 'ATTACHED'
-          vnic_details = OracleBMC::Core::Models::Vnic.new
           begin
             vnic_info = network_client.get_vnic(vnic.vnic_id, {})
           rescue OracleBMC::Errors::ServiceError => service_error
             raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
           else
-            vnic_details.is_primary = vnic_info.data.is_primary
-            vnic_details.private_ip = vnic_info.data.private_ip
-            vnic_details.public_ip = vnic_info.data.public_ip
-            vnic_details.hostname_label = vnic_info.data.hostname_label
+            # for now, only display information for primary vnic
+            if vnic_info.data.is_primary == true
+              vnic_array.push(vnic_info.data)
+              break
+            end
           end
-          vnic_array.push(vnic_details)
         end
 
         display_server_info(config, server.data, vnic_array)
