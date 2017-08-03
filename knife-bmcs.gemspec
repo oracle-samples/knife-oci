@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.2.0'
 
-  s.add_runtime_dependency 'oraclebmc', '~> 1.0', '>= 1.2.1'
+  s.add_runtime_dependency 'oraclebmc', '~> 1.0', '>= 1.2.4'
 
   s.require_paths = ['lib']
   s.files         = Dir['./lib/**/*.rb', 'LICENSE.txt']

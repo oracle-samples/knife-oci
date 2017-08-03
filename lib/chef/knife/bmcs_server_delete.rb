@@ -70,14 +70,6 @@ class Chef
         end
       end
 
-      def check_can_access_instance(instance_id)
-        response = compute_client.get_instance(instance_id)
-        error_and_exit 'Instance is already in terminated state' if response && response.data && response.data.lifecycle_state == OracleBMC::Core::Models::Instance::LIFECYCLE_STATE_TERMINATED
-      rescue OracleBMC::Errors::ServiceError => service_error
-        raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
-        error_and_exit 'Instance not authorized or not found'
-      end
-
       def validate_wait
         wait_for = nil
         if config[:wait]

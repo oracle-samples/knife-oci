@@ -167,17 +167,7 @@ class Chef
         ui.msg "Created and bootstrapped node '#{config[:chef_node_name]}'."
         ui.msg "\n"
 
-        show_value('Display Name', instance.display_name)
-        show_value('Instance ID', instance.id)
-        show_value('Availability Domain', instance.availability_domain)
-        show_value('Compartment ID', instance.compartment_id)
-        show_value('Region', instance.region)
-        show_value('Image ID', instance.image_id)
-        show_value('Shape', instance.shape)
-        show_value('Public IP Address', vnic.public_ip)
-        show_value('Private IP Address', vnic.private_ip)
-        show_value('Hostname', vnic.hostname_label)
-        show_value('Node Name', config[:chef_node_name])
+        display_server_info(config, instance, [vnic])
       end
 
       def bootstrap(name)
@@ -324,10 +314,6 @@ class Chef
 
       def end_progress_indicator
         print ui.color("done\n", :magenta)
-      end
-
-      def show_value(key, value, color = :cyan)
-        ui.msg "#{ui.color(key, color)}: #{value}" if value && !value.to_s.empty?
       end
 
       def get_file_content(file_name_param)
