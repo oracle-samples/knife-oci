@@ -55,6 +55,8 @@ def run_tests(output_format)
   end
 end
 
+Chef::Knife::BmcsVcnList.load_deps
+
 describe Chef::Knife::BmcsVcnList do
   let(:knife_bmcs_vcn_list) { Chef::Knife::BmcsVcnList.new }
 

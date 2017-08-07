@@ -6,6 +6,9 @@ require 'chef/knife/bmcs_subnet_list'
 require 'oraclebmc'
 require './spec/spec_helper'
 
+Chef::Knife::BmcsServerList.load_deps
+Chef::Knife::BmcsSubnetList.load_deps
+
 describe 'bmcs common utilities' do
   describe 'loading of config values' do
     let(:knife_bmcs_server_list) { Chef::Knife::BmcsServerList.new }

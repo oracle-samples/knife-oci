@@ -61,6 +61,8 @@ def run_tests(output_format)
   end
 end
 
+Chef::Knife::BmcsSubnetList.load_deps
+
 describe Chef::Knife::BmcsSubnetList do
   let(:knife_bmcs_subnet_list) { Chef::Knife::BmcsSubnetList.new }
 

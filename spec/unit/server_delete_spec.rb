@@ -5,6 +5,8 @@ require 'chef/knife/bmcs_server_delete'
 require 'oraclebmc'
 require './spec/spec_helper'
 
+Chef::Knife::BmcsServerDelete.load_deps
+
 describe Chef::Knife::BmcsServerDelete do
   let(:knife_bmcs_server_delete) { Chef::Knife::BmcsServerDelete.new }
 

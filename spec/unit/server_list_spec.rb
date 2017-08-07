@@ -55,6 +55,8 @@ def run_tests(output_format)
   end
 end
 
+Chef::Knife::BmcsServerList.load_deps
+
 describe Chef::Knife::BmcsServerList do
   let(:knife_bmcs_server_list) { Chef::Knife::BmcsServerList.new }
 

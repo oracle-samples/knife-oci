@@ -82,6 +82,8 @@ def run_tests(output_format)
   end
 end
 
+Chef::Knife::BmcsCompartmentList.load_deps
+
 describe Chef::Knife::BmcsCompartmentList do
   let(:knife_bmcs_compartment_list) { Chef::Knife::BmcsCompartmentList.new }
 

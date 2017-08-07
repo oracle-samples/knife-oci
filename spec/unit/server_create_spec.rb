@@ -5,6 +5,8 @@ require 'chef/knife/bmcs_server_create'
 require 'oraclebmc'
 require './spec/spec_helper'
 
+Chef::Knife::BmcsServerCreate.load_deps
+
 describe Chef::Knife::BmcsServerCreate do
   let(:knife_bmcs_server_create) { Chef::Knife::BmcsServerCreate.new }
 
