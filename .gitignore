@@ -3,6 +3,7 @@
 .idea/
 .DS_Store
 chef-repo/
+coverage/
 dist/
 internal_resources/
 Gemfile.lock

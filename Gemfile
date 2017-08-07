@@ -8,4 +8,5 @@ group :development do
   gem 'rake'
   gem 'rspec'
   gem 'rubocop', '~> 0.48.1'
+  gem 'simplecov'
 end
