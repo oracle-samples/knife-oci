@@ -2,7 +2,6 @@
 
 require 'json'
 require 'chef/knife/bmcs_subnet_list'
-require 'oraclebmc'
 require './spec/spec_helper'
 
 # rubocop:disable Metrics/AbcSize

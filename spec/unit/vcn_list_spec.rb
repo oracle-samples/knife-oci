@@ -2,7 +2,6 @@
 
 require 'json'
 require 'chef/knife/bmcs_vcn_list'
-require 'oraclebmc'
 require './spec/spec_helper'
 
 def run_tests(output_format)

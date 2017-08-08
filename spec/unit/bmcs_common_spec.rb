@@ -3,7 +3,6 @@
 require 'json'
 require 'chef/knife/bmcs_server_list'
 require 'chef/knife/bmcs_subnet_list'
-require 'oraclebmc'
 require './spec/spec_helper'
 
 Chef::Knife::BmcsServerList.load_deps

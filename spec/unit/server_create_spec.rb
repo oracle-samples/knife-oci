@@ -2,7 +2,6 @@
 
 require 'json'
 require 'chef/knife/bmcs_server_create'
-require 'oraclebmc'
 require './spec/spec_helper'
 
 Chef::Knife::BmcsServerCreate.load_deps
