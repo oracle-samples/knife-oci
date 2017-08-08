@@ -77,11 +77,6 @@ describe Chef::Knife::BmcsServerShow do
              headers: {})
     end
 
-    let(:empty_response) do
-      double(data: nil,
-             headers: {})
-    end
-
     let(:nil_response) do
       double(data: nil,
              headers: {})
