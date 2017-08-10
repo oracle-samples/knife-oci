@@ -35,7 +35,8 @@ describe Chef::Knife::BmcsServerCreate do
         shape: 'round',
         subnet_id: 'supersubnet',
         ssh_authorized_keys_file: DUMMY_PUBLIC_KEY_FILE,
-        identity_file: DUMMY_PRIVATE_KEY_FILE
+        identity_file: DUMMY_PRIVATE_KEY_FILE,
+        bmcs_config_file: DUMMY_CONFIG_FILE
       }
     end
 
