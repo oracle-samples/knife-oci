@@ -2,11 +2,6 @@
 
 require './spec/spec_helper'
 require 'json'
-require 'chef/knife/bmcs_server_list'
-require 'chef/knife/bmcs_subnet_list'
-
-Chef::Knife::BmcsServerList.load_deps
-Chef::Knife::BmcsSubnetList.load_deps
 
 describe 'bmcs common utilities' do
   describe 'loading of config values' do
