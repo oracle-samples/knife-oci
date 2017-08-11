@@ -36,7 +36,8 @@ describe Chef::Knife::BmcsServerCreate do
         shape: 'round',
         subnet_id: 'supersubnet',
         ssh_authorized_keys_file: DUMMY_PUBLIC_KEY_FILE,
-        identity_file: DUMMY_PRIVATE_KEY_FILE
+        identity_file: DUMMY_PRIVATE_KEY_FILE,
+        bmcs_config_file: DUMMY_CONFIG_FILE
       }
     end
 
@@ -68,7 +69,7 @@ describe Chef::Knife::BmcsServerCreate do
     it 'should expand file paths' do
       knife_bmcs_server_create.config[:user_data_file] = '~/notarealfile.dat'
       expect { knife_bmcs_server_create.get_file_content(:user_data_file) }.to raise_error do |error|
-        expect(error.to_s).to include(ENV['USER'])
+        expect(error.to_s).to include(ENV['USER'] || ' ')
       end
     end
 
