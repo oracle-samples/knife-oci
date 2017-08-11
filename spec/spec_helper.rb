@@ -1,5 +1,10 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
+require 'simplecov'
+SimpleCov.start do
+  add_filter '/chef-repo/'
+end
+
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 

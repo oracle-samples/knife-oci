@@ -1,10 +1,7 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
-require 'json'
-require 'chef/knife/bmcs_server_list'
-require 'chef/knife/bmcs_subnet_list'
-require 'oraclebmc'
 require './spec/spec_helper'
+require 'json'
 
 describe 'bmcs common utilities' do
   describe 'loading of config values' do

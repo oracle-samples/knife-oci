@@ -1,9 +1,8 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
+require './spec/spec_helper'
 require 'json'
 require 'chef/knife/bmcs_vcn_list'
-require 'oraclebmc'
-require './spec/spec_helper'
 
 def run_tests(output_format)
   receive_type = output_format == 'summary' ? :list : :output
@@ -54,6 +53,8 @@ def run_tests(output_format)
     knife_bmcs_vcn_list.run
   end
 end
+
+Chef::Knife::BmcsVcnList.load_deps
 
 describe Chef::Knife::BmcsVcnList do
   let(:knife_bmcs_vcn_list) { Chef::Knife::BmcsVcnList.new }

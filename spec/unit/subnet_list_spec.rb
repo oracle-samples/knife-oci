@@ -1,9 +1,8 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
+require './spec/spec_helper'
 require 'json'
 require 'chef/knife/bmcs_subnet_list'
-require 'oraclebmc'
-require './spec/spec_helper'
 
 # rubocop:disable Metrics/AbcSize
 def run_tests(output_format)
@@ -60,6 +59,8 @@ def run_tests(output_format)
     knife_bmcs_subnet_list.run
   end
 end
+
+Chef::Knife::BmcsSubnetList.load_deps
 
 describe Chef::Knife::BmcsSubnetList do
   let(:knife_bmcs_subnet_list) { Chef::Knife::BmcsSubnetList.new }

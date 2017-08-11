@@ -1,9 +1,8 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
+require './spec/spec_helper'
 require 'json'
 require 'chef/knife/bmcs_server_show'
-require 'oraclebmc'
-require './spec/spec_helper'
 
 # rubocop:disable Metrics/AbcSize
 def run_tests(output_format)
@@ -46,6 +45,8 @@ def run_tests(output_format)
   end
 end
 
+Chef::Knife::BmcsServerShow.load_deps
+
 describe Chef::Knife::BmcsServerShow do
   let(:knife_bmcs_server_show) { Chef::Knife::BmcsServerShow.new }
 
@@ -73,11 +74,6 @@ describe Chef::Knife::BmcsServerShow do
 
     let(:response) do
       double(data: instance,
-             headers: {})
-    end
-
-    let(:empty_response) do
-      double(data: nil,
              headers: {})
     end
 

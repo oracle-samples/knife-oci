@@ -1,9 +1,8 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
+require './spec/spec_helper'
 require 'json'
 require 'chef/knife/bmcs_compartment_list'
-require 'oraclebmc'
-require './spec/spec_helper'
 
 # rubocop:disable Metrics/AbcSize
 def run_tests(output_format)
@@ -81,6 +80,8 @@ def run_tests(output_format)
     knife_bmcs_compartment_list.run
   end
 end
+
+Chef::Knife::BmcsCompartmentList.load_deps
 
 describe Chef::Knife::BmcsCompartmentList do
   let(:knife_bmcs_compartment_list) { Chef::Knife::BmcsCompartmentList.new }
