@@ -1,8 +1,8 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
+require './spec/spec_helper'
 require 'json'
 require 'chef/knife/bmcs_vcn_list'
-require './spec/spec_helper'
 
 def run_tests(output_format)
   receive_type = output_format == 'summary' ? :list : :output

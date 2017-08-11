@@ -1,8 +1,8 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
+require './spec/spec_helper'
 require 'json'
 require 'chef/knife/bmcs_server_list'
-require './spec/spec_helper'
 
 # rubocop:disable Metrics/AbcSize
 def run_tests(output_format)

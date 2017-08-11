@@ -1,8 +1,8 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
+require './spec/spec_helper'
 require 'json'
 require 'chef/knife/bmcs_server_create'
-require './spec/spec_helper'
 
 Chef::Knife::BmcsServerCreate.load_deps
 

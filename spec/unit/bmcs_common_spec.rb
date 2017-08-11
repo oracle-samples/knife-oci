@@ -1,9 +1,9 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
+require './spec/spec_helper'
 require 'json'
 require 'chef/knife/bmcs_server_list'
 require 'chef/knife/bmcs_subnet_list'
-require './spec/spec_helper'
 
 Chef::Knife::BmcsServerList.load_deps
 Chef::Knife::BmcsSubnetList.load_deps
