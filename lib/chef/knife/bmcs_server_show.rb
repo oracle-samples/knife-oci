@@ -20,7 +20,7 @@ class Chef
 
       option :instance_id,
              long: '--instance_id LIMIT',
-             description: 'The OCID of the server to display.'
+             description: 'The OCID of the server to display. (required)'
 
       def run
         validate_required_params(%i[instance_id], config)
