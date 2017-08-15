@@ -1,4 +1,5 @@
 # Chef Knife Plugin for Oracle BMCS
+[![wercker status](https://app.wercker.com/status/ac93aab6dd2653be7da9e971dfa288cf/s/master "wercker status")](https://app.wercker.com/project/byKey/ac93aab6dd2653be7da9e971dfa288cf)
 
 ## About
 
