@@ -4,6 +4,21 @@ require 'chef/knife'
 require 'chef/knife/bmcs_common_options'
 require 'chef/knife/bmcs_helper'
 
+# Methods to extend the instance model
+module ServerDetails
+  attr_accessor :compartment_name
+  attr_accessor :image_name
+  attr_accessor :launchtime
+  attr_accessor :vcn_id
+  attr_accessor :vcn_name
+end
+
+# Methods to extend the vnic model
+module VnicDetails
+  attr_accessor :fqdn
+  attr_accessor :subnet_name
+end
+
 class Chef
   class Knife
     # List BMCS instances. Note that this lists all instances in a
@@ -22,6 +37,23 @@ class Chef
              long: '--instance_id LIMIT',
              description: 'The OCID of the server to display. (required)'
 
+      def add_server_details(server)
+        server.extend ServerDetails
+
+        server.compartment_name = 'server compartment name'
+        server.image_name = 'server image name'
+        server.launchtime = 'server launchtime'
+        server.vcn_id = 'server vnc id'
+        server.vcn_name = 'server vcn name'
+      end
+
+      def add_vnic_details(vnic)
+        vnic.extend VnicDetails
+
+        vnic.fqdn = 'vnic fqdn'
+        vnic.subnet_name = 'vnic subnet name'
+      end
+
       def run
         validate_required_params(%i[instance_id], config)
         vnic_array = []
@@ -32,6 +64,7 @@ class Chef
           next unless vnic.lifecycle_state == 'ATTACHED'
           begin
             vnic_info = network_client.get_vnic(vnic.vnic_id, {})
+            add_vnic_details(vnic_info.data)
           rescue OracleBMC::Errors::ServiceError => service_error
             raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
           else
@@ -42,6 +75,7 @@ class Chef
             end
           end
         end
+        add_server_details(server.data)
 
         display_server_info(config, server.data, vnic_array)
       end
