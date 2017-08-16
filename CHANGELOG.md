@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - List subnets command, 'knife bmcs subnet list --vcn-id <VCN ID>'
 - Server show command, 'knife bmcs server show --instance-id <Instance ID>'
 - Server delete command, 'knife bmcs server delete --instance-id <Instance ID>'
-- Region param for all BMCS commands, '--region'
+- Region parameter for all BMCS commands, '--region'
 - Wait time parameters for 'knife bmcs server create'
 
 ## 1.0.0 - 2017-06-09
