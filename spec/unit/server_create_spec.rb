@@ -132,7 +132,7 @@ describe Chef::Knife::BmcsServerCreate do
 
     it 'should add to user agent' do
       knife_bmcs_server_create.config[:bmcs_config_file] = DUMMY_CONFIG_FILE
-      expect(knife_bmcs_server_create.bmcs_config.additional_user_agent).to eq 'Oracle-ChefKnifeBMCS/1.0.0'
+      expect(knife_bmcs_server_create.bmcs_config.additional_user_agent).to eq 'Oracle-ChefKnifeBMCS/1.1.0'
     end
   end
 
