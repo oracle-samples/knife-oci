@@ -16,7 +16,7 @@ class Chef
           @bmcs_config = OracleBMC::ConfigFileLoader.load_config(config_file_location: config_file, profile_name: profile)
           @bmcs_config.region = config[:region] if config[:region]
 
-          @bmcs_config.additional_user_agent = "Oracle-ChefKnifeBMCS/#{::Knife::BMCS::VERSION}"
+          @bmcs_config.additional_user_agent = "Oracle-ChefKnifeOCI/#{::Knife::BMCS::VERSION}"
         end
 
         @bmcs_config
