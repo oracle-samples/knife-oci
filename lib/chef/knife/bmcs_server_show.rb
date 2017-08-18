@@ -17,6 +17,7 @@ end
 module VnicDetails
   attr_accessor :fqdn
   attr_accessor :subnet_name
+  attr_accessor :vcn_id
 end
 
 class Chef
@@ -38,38 +39,28 @@ class Chef
              description: 'The OCID of the server to display. (required)'
 
       def lookup_compartment_name(compartment_id)
-        compartments = identity_client.list_compartments(bmcs_config.tenancy, {})
-        compartments.data && compartments.data.each do |compartment|
-          next unless compartment.id == compartment_id
-          return compartment.description || compartment.name
-        end
+        compartment = identity_client.get_compartment(compartment_id, {})
+        compartment.data.description || compartment.data.name
       end
 
       def lookup_image_name(image_id)
-        images = compute_client.list_images(compartment_id, {})
-        images.data && images.data.each do |image|
-          next unless image.id == image_id
-          return image.display_name
-        end
+        image = compute_client.get_image(image_id, {})
+        image.data.display_name
       end
 
-      def lookup_vcn(compartment_id)
-        vcns = network_client.list_vcns(compartment_id, {})
-        vcns.data && vcns.data.each do |vcn|
-          next unless vcn.compartment_id == compartment_id
-          return vcn
-        end
+      def lookup_vcn_name(vcn_id)
+        vcn = network_client.get_vcn(vcn_id, {})
+        vcn.data.display_name
       end
 
-      def add_server_details(server)
+      def add_server_details(server, vcn_id)
         server.extend ServerDetails
 
         server.launchtime = server.time_created.strftime('%a, %e %b %Y %T %Z')
         server.compartment_name = lookup_compartment_name(server.compartment_id)
         server.image_name = lookup_image_name(server.image_id)
-        vcn = lookup_vcn(server.compartment_id)
-        server.vcn_id = vcn.id
-        server.vcn_name = vcn.display_name
+        server.vcn_id = vcn_id
+        server.vcn_name = lookup_vcn_name(vcn_id)
       end
 
       def add_vnic_details(vnic)
@@ -80,6 +71,8 @@ class Chef
           subnet.data && subnet.data.subnet_domain_name && vnic.hostname_label
         vnic.subnet_name = subnet.data.display_name if
           subnet.data && subnet.data.display_name
+        # piggyback the vcn_id from here, so we can avoid a few network calls
+        vnic.vcn_id = subnet.data.vcn_id
       end
 
       def run
@@ -87,7 +80,6 @@ class Chef
         vnic_array = []
         server = check_can_access_instance(config[:instance_id])
         error_and_exit 'Unable to retrieve instance' unless server.data
-        add_server_details(server.data)
         vnics = compute_client.list_vnic_attachments(compartment_id, instance_id: config[:instance_id])
         vnics.data && vnics.data.each do |vnic|
           next unless vnic.lifecycle_state == 'ATTACHED'
@@ -104,6 +96,7 @@ class Chef
             end
           end
         end
+        add_server_details(server.data, vnic_array[0] ? vnic_array[0].vcn_id : nil)
 
         display_server_info(config, server.data, vnic_array)
       end
