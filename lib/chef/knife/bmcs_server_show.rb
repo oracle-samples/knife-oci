@@ -16,6 +16,7 @@ end
 # Methods to extend the vnic model
 module VnicDetails
   attr_accessor :fqdn
+  attr_accessor :subnet_name
 end
 
 class Chef
@@ -77,6 +78,8 @@ class Chef
         subnet = network_client.get_subnet(vnic.subnet_id, {})
         vnic.fqdn = vnic.hostname_label + '.' + subnet.data.subnet_domain_name if
           subnet.data && subnet.data.subnet_domain_name && vnic.hostname_label
+        vnic.subnet_name = subnet.data.display_name if
+          subnet.data && subnet.data.display_name
       end
 
       def run

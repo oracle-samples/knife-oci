@@ -110,6 +110,7 @@ describe Chef::Knife::BmcsServerShow do
     let(:subnet1) do
       double(:subnet1,
              id: 'mysubnet-1',
+             display_name: 'compartmentA test subnet mysubnet-1',
              subnet_domain_name: 'mysubnet-1.mycvn1.oraclevcn.com',
              to_hash: { 'display_name' => 'hashname' })
     end
