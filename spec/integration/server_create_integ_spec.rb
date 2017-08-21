@@ -102,8 +102,8 @@ describe 'server create command' do
         puts "Clean Up: Terminating instance #{instance_id}."
         params = min_delete_params
         params['--instance-id'] = instance_id
-        params['--prune'] = true
-        shell = run_server_delete(params, 'test_oracle_linux_delete_with_prune')
+        params['--purge'] = true
+        shell = run_server_delete(params, 'test_oracle_linux_delete_with_purge')
         validate_delete_output(shell, chef_node_name)
       end
     end
@@ -125,7 +125,7 @@ describe 'server create command' do
         puts "Clean Up: Terminating instance #{instance_id}."
         params = min_delete_params
         params['--instance-id'] = instance_id
-        params['--prune'] = true
+        params['--purge'] = true
         shell = run_server_delete(params, 'test_oracle_linux_delete_with_non_default_displayname')
         validate_delete_output(shell, extra_params['--display-name'])
       end
@@ -149,8 +149,8 @@ describe 'server create command' do
         puts "Clean Up: Terminating instance #{instance_id}."
         params = min_delete_params
         params['--instance-id'] = instance_id
-        params['--prune'] = true
-        params['--chef-node-name'] = chef_node_name
+        params['--purge'] = true
+        params['--node-name'] = chef_node_name
         shell = run_server_delete(params, 'test_ubuntu_delete')
         validate_delete_output(shell, chef_node_name)
       end

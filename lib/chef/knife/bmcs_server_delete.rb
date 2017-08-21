@@ -29,20 +29,21 @@ class Chef
              long: '--wait SECONDS',
              description: 'Wait for the instance to be terminated. 0=infinite'
 
-      option :prune,
-             long: '--prune',
-             description: 'Also remove node from Chef server.'
+      option :purge,
+             long: '--purge',
+             description: 'Also remove node from Chef server. Chef node name defaults to the instance display name unless node-name is specified.'
 
       option :chef_node_name,
-             long: '--chef-node-name NAME',
-             description: 'Name of the Chef node being removed. Defaults to the instance display name.'
+             short: '-N NAME',
+             long: '--node-name NAME',
+             description: 'The Chef node name being removed. If not specified, the instance display name will be used.'
 
       def run
         $stdout.sync = true
         validate_required_params(%i[instance_id], config)
         wait_for = validate_wait
-        if config[:chef_node_name] && !config[:prune]
-          error_and_exit('--chef-node-name requires --prune argument')
+        if config[:chef_node_name] && !config[:purge]
+          error_and_exit('--node-name requires --purge argument')
         end
 
         response = check_can_access_instance(config[:instance_id])
@@ -50,7 +51,7 @@ class Chef
         ui.msg "Instance name: #{response.data.display_name}"
         deletion_prompt = 'Delete server? (y/n)'
         chef_node = nil
-        if config[:prune]
+        if config[:purge]
           deletion_prompt = 'Delete server and chef node? (y/n)'
           node_name = response.data.display_name
           node_name = config[:chef_node_name] if config[:chef_node_name]
@@ -60,7 +61,7 @@ class Chef
         confirm_deletion(deletion_prompt)
 
         terminate_instance(config[:instance_id])
-        delete_chef_node(chef_node) if config[:prune]
+        delete_chef_node(chef_node) if config[:purge]
 
         wait_for_instance_terminated(config[:instance_id], wait_for) if wait_for
       end

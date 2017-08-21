@@ -70,18 +70,18 @@ describe Chef::Knife::BmcsServerDelete do
       expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
     end
 
-    it 'should fail if chef-node-name but not prune provided' do
+    it 'should fail if node-name but not purge provided' do
       knife_bmcs_server_delete.config = config
       knife_bmcs_server_delete.config[:chef_node_name] = 'test'
-      knife_bmcs_server_delete.config.delete(:prune)
+      knife_bmcs_server_delete.config.delete(:purge)
 
-      expect(knife_bmcs_server_delete.ui).to receive(:error).with('--chef-node-name requires --prune argument')
+      expect(knife_bmcs_server_delete.ui).to receive(:error).with('--node-name requires --purge argument')
       expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
     end
 
     it 'should delete remote instance and default named chef node' do
       knife_bmcs_server_delete.config = config
-      knife_bmcs_server_delete.config[:prune] = true
+      knife_bmcs_server_delete.config[:purge] = true
 
       allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
       allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
@@ -98,7 +98,7 @@ describe Chef::Knife::BmcsServerDelete do
 
     it 'should delete remote instance and specifically named chef node' do
       knife_bmcs_server_delete.config = config
-      knife_bmcs_server_delete.config[:prune] = true
+      knife_bmcs_server_delete.config[:purge] = true
       knife_bmcs_server_delete.config[:chef_node_name] = 'newname'
 
       allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
