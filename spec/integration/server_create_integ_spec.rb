@@ -12,13 +12,28 @@ end
 def run_server_create(param_hash, file)
   puts "Running integ test #{file}..."
   if should_mock_response
-    puts '++++++ Response is being mocked. To stock mocking, unset MOCK_BMCS. ++++++'
+    puts '++++++ Response is being mocked. To stop mocking, unset MOCK_BMCS. ++++++'
     shell = double(stdout: File.open(SERVER_CREATE_OUTPUT_DIRECTORY + file + '.txt', 'rb').read)
   else
     params = param_hash.map { |k, v| "#{k} #{v}" }.join(' ')
     shell = write_command_to_file("server create #{params}", file, SERVER_CREATE_OUTPUT_DIRECTORY)
   end
   @latest_output = shell.stdout
+  puts "Warning: command output is empty.  Check #{SERVER_CREATE_OUTPUT_DIRECTORY + file + '.txt'} for error messages" if @latest_output.to_s.empty?
+  shell
+end
+
+def run_server_delete(param_hash, file)
+  puts "Running integ test #{file}..."
+  if should_mock_response
+    puts '++++++ Response is being mocked. To stop mocking, unset MOCK_BMCS. ++++++'
+    shell = double(stdout: File.open(SERVER_CREATE_OUTPUT_DIRECTORY + file + '.txt', 'rb').read)
+  else
+    params = param_hash.map { |k, v| "#{k} #{v}" }.join(' ')
+    shell = write_command_to_file("server delete #{params}", file, SERVER_CREATE_OUTPUT_DIRECTORY)
+  end
+  @latest_output = shell.stdout
+  puts "Warning: command output is empty.  Check #{SERVER_CREATE_OUTPUT_DIRECTORY + file + '.txt'} for error messages" if @latest_output.to_s.empty?
   shell
 end
 
@@ -28,6 +43,10 @@ def validate_output(shell, params)
   expect(shell.stdout).to include('is now running')
   expect(shell.stdout).to include('Public IP Address:')
   expect(shell.stdout).to include('Chef Client finished')
+end
+
+def validate_delete_output(shell, chef_node_name)
+  expect(shell.stdout).to include("Deleted Chef node '#{chef_node_name}'")
 end
 
 describe 'server create command' do
@@ -56,26 +75,38 @@ describe 'server create command' do
     }
   end
 
-  after(:each) do
-    unless @latest_output.nil? || should_mock_response
-      output = @latest_output
-      @latest_output = nil
-
-      match = output.match("Instance ID:\s(.*)")
-      if match && match.length > 1
-        instance_id = match[1]
-        puts "Clean Up: Terminating instance #{instance_id}."
-        client = OracleBMC::Core::ComputeClient.new(config: OracleBMC::ConfigFileLoader.load_config(config_file_location: config_file_path, profile_name: profile))
-        client.terminate_instance(instance_id)
-      end
-    end
+  let(:min_delete_params) do
+    {
+      '--compartment-id' => compartment_id,
+      '--bmcs-config-file' => config_file_path,
+      '--bmcs-profile' => profile,
+      '--yes' => true
+    }
   end
 
   it 'can create an Oracle Linux instance with min params' do
     params = min_params
     params['--image-id'] = oracle_linux_image_id
+    puts params.inspect
     shell = run_server_create(params, 'test_oracle_linux_min_params')
     validate_output(shell, params)
+
+    unless @latest_output.nil?
+      # delete the instance using default chef node name
+      output = @latest_output
+      @latest_output = nil
+      match = output.match("Instance ID:\s(.*)")
+      if match && match.length > 1
+        instance_id = match[1]
+        chef_node_name = output.match("Bootstrapping with node name '(.+)'")[1]
+        puts "Clean Up: Terminating instance #{instance_id}."
+        params = min_delete_params
+        params['--instance-id'] = instance_id
+        params['--prune'] = true
+        shell = run_server_delete(params, 'test_oracle_linux_delete_with_prune')
+        validate_delete_output(shell, chef_node_name)
+      end
+    end
   end
 
   it 'can create an Oracle Linux instance with all params' do
@@ -84,6 +115,21 @@ describe 'server create command' do
     shell = run_server_create(params, 'test_oracle_linux_all_params')
     validate_output(shell, params)
     expect(shell.stdout).to include(params['--display-name'])
+    unless @latest_output.nil?
+      # delete the instance using default chef node name
+      output = @latest_output
+      @latest_output = nil
+      match = output.match("Instance ID:\s(.*)")
+      if match && match.length > 1
+        instance_id = match[1]
+        puts "Clean Up: Terminating instance #{instance_id}."
+        params = min_delete_params
+        params['--instance-id'] = instance_id
+        params['--prune'] = true
+        shell = run_server_delete(params, 'test_oracle_linux_delete_with_non_default_displayname')
+        validate_delete_output(shell, extra_params['--display-name'])
+      end
+    end
   end
 
   it 'can create an Ubuntu instance' do
@@ -92,5 +138,22 @@ describe 'server create command' do
     params['--ssh-user'] = 'ubuntu'
     shell = run_server_create(params, 'test_ubuntu')
     validate_output(shell, params)
+    unless @latest_output.nil?
+      # delete the instance using specified chef node name
+      output = @latest_output
+      @latest_output = nil
+      match = output.match("Instance ID:\s(.*)")
+      if match && match.length > 1
+        instance_id = match[1]
+        chef_node_name = output.match("Bootstrapping with node name '(.+)'")[1]
+        puts "Clean Up: Terminating instance #{instance_id}."
+        params = min_delete_params
+        params['--instance-id'] = instance_id
+        params['--prune'] = true
+        params['--chef-node-name'] = chef_node_name
+        shell = run_server_delete(params, 'test_ubuntu_delete')
+        validate_delete_output(shell, chef_node_name)
+      end
+    end
   end
 end
