@@ -29,16 +29,39 @@ class Chef
              long: '--wait SECONDS',
              description: 'Wait for the instance to be terminated. 0=infinite'
 
+      option :purge,
+             long: '--purge',
+             description: 'Remove the corresponding node from the Chef Server. The instance display name will be used as the node name, unless --node-name is specified.'
+
+      option :chef_node_name,
+             short: '-N NAME',
+             long: '--node-name NAME',
+             description: 'The name of the Chef node to be removed when using the --purge option. If not specified, the instance display name will be used.'
+
       def run
         $stdout.sync = true
         validate_required_params(%i[instance_id], config)
         wait_for = validate_wait
+        if config[:chef_node_name] && !config[:purge]
+          error_and_exit('--node-name requires --purge argument')
+        end
 
-        confirm_deletion
+        response = check_can_access_instance(config[:instance_id])
 
-        check_can_access_instance(config[:instance_id])
+        ui.msg "Instance name: #{response.data.display_name}"
+        deletion_prompt = 'Delete server? (y/n)'
+        chef_node = nil
+        if config[:purge]
+          deletion_prompt = 'Delete server and chef node? (y/n)'
+          node_name = response.data.display_name
+          node_name = config[:chef_node_name] if config[:chef_node_name]
+          chef_node = get_chef_node(node_name)
+          ui.msg "Chef node name: #{chef_node.name}"
+        end
+        confirm_deletion(deletion_prompt)
 
         terminate_instance(config[:instance_id])
+        delete_chef_node(chef_node) if config[:purge]
 
         wait_for_instance_terminated(config[:instance_id], wait_for) if wait_for
       end
@@ -47,6 +70,16 @@ class Chef
         compute_client.terminate_instance(instance_id)
 
         ui.msg "Initiated delete of instance #{instance_id}"
+      end
+
+      def get_chef_node(node_name)
+        node = Chef::Node.load(node_name)
+        node
+      end
+
+      def delete_chef_node(node)
+        node.destroy
+        ui.msg "Deleted Chef node '#{node.name}'"
       end
 
       def wait_for_instance_terminated(instance_id, wait_for)
@@ -87,8 +120,12 @@ class Chef
         opts
       end
 
-      def confirm_deletion
-        return if confirm('Delete server? (y/n)')
+      def confirm_deletion(prompt)
+        if confirm(prompt)
+          # we have user's confirmation, so avoid any further confirmation prompts from Chef
+          config[:yes] = true
+          return
+        end
         error_and_exit 'Server delete canceled.'
       end
 

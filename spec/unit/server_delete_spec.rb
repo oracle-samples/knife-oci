@@ -57,9 +57,61 @@ describe Chef::Knife::BmcsServerDelete do
              lifecycle_state: 'TERMINATED')
     end
 
+    let(:chef_node) do
+      double(name: 'myname')
+    end
+
+    let(:chef_node_newname) do
+      double(name: 'newname')
+    end
+
     it 'should list missing required params' do
       expect(knife_bmcs_server_delete.ui).to receive(:error).with('Missing the following required parameters: instance-id')
       expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
+    end
+
+    it 'should fail if node-name but not purge provided' do
+      knife_bmcs_server_delete.config = config
+      knife_bmcs_server_delete.config[:chef_node_name] = 'test'
+      knife_bmcs_server_delete.config.delete(:purge)
+
+      expect(knife_bmcs_server_delete.ui).to receive(:error).with('--node-name requires --purge argument')
+      expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
+    end
+
+    it 'should delete remote instance and default named chef node' do
+      knife_bmcs_server_delete.config = config
+      knife_bmcs_server_delete.config[:purge] = true
+
+      allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
+      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      allow(Chef::Node).to receive(:load).with('myname').and_return(chef_node)
+      expect(chef_node).to receive(:destroy)
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Chef node name: myname')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef node 'myname'")
+      expect(knife_bmcs_server_delete.ui).not_to receive(:warn)
+
+      knife_bmcs_server_delete.run
+    end
+
+    it 'should delete remote instance and specifically named chef node' do
+      knife_bmcs_server_delete.config = config
+      knife_bmcs_server_delete.config[:purge] = true
+      knife_bmcs_server_delete.config[:chef_node_name] = 'newname'
+
+      allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
+      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      allow(Chef::Node).to receive(:load).with('newname').and_return(chef_node_newname)
+      expect(chef_node_newname).to receive(:destroy)
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Chef node name: newname')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef node 'newname'")
+      expect(knife_bmcs_server_delete.ui).not_to receive(:warn)
+
+      knife_bmcs_server_delete.run
     end
 
     it 'should delete remote instance' do
@@ -67,7 +119,8 @@ describe Chef::Knife::BmcsServerDelete do
 
       allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
       allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).with('Initiated delete of instance ocid1.instance.oc1.test')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
       expect(knife_bmcs_server_delete.ui).not_to receive(:warn)
 
       knife_bmcs_server_delete.run
@@ -109,7 +162,8 @@ describe Chef::Knife::BmcsServerDelete do
       allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
       allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       expect(knife_bmcs_server_delete).to receive(:wait_for_instance_terminated)
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).with('Initiated delete of instance ocid1.instance.oc1.test')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
 
       knife_bmcs_server_delete.run
     end
@@ -121,7 +175,8 @@ describe Chef::Knife::BmcsServerDelete do
       allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
       allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       expect(knife_bmcs_server_delete).to_not receive(:wait_for_instance_terminated)
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).with('Initiated delete of instance ocid1.instance.oc1.test')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
 
       knife_bmcs_server_delete.run
     end
@@ -132,7 +187,8 @@ describe Chef::Knife::BmcsServerDelete do
 
       allow(knife_bmcs_server_delete.ui).to receive(:ask).and_return('n').exactly(1).times
       expect(knife_bmcs_server_delete.compute_client).to_not receive(:terminate_instance)
-      expect(knife_bmcs_server_delete.compute_client).to_not receive(:get_instance)
+      expect(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
       expect(knife_bmcs_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
       expect(knife_bmcs_server_delete.ui).to receive(:error).with('Server delete canceled.')
       expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
@@ -146,7 +202,8 @@ describe Chef::Knife::BmcsServerDelete do
       allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
       allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       expect(knife_bmcs_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).with('Initiated delete of instance ocid1.instance.oc1.test')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
       expect(knife_bmcs_server_delete.ui).not_to receive(:warn)
 
       knife_bmcs_server_delete.run
@@ -158,7 +215,8 @@ describe Chef::Knife::BmcsServerDelete do
 
       allow(knife_bmcs_server_delete.ui).to receive(:ask).and_return('zn').exactly(3).times
       expect(knife_bmcs_server_delete.compute_client).to_not receive(:terminate_instance)
-      expect(knife_bmcs_server_delete.compute_client).to_not receive(:get_instance)
+      expect(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
       expect(knife_bmcs_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
       expect(knife_bmcs_server_delete.ui).to receive(:warn).with('Valid responses are ["yes", "no", "y", "n"]').exactly(3).times
       expect(knife_bmcs_server_delete.ui).to receive(:error).with('Server delete canceled.')
