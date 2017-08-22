@@ -49,6 +49,19 @@ def validate_delete_output(shell, chef_node_name)
   expect(shell.stdout).to include("Deleted Chef node '#{chef_node_name}'")
 end
 
+def delete_and_purge
+  return if @latest_output.nil?
+  # delete the instance using default chef node name
+  output = @latest_output
+  @latest_output = nil
+  match = output.match("Instance ID:\s(.*)")
+  return unless match && match.length > 1
+  instance_id = match[1]
+  chef_node_name = output.match("Bootstrapping with node name '(.+)'")[1]
+  puts "Clean Up: Terminating instance #{instance_id}."
+  yield instance_id, chef_node_name
+end
+
 describe 'server create command' do
   let(:min_params) do
     {
@@ -91,21 +104,13 @@ describe 'server create command' do
     shell = run_server_create(params, 'test_oracle_linux_min_params')
     validate_output(shell, params)
 
-    unless @latest_output.nil?
+    delete_and_purge do |instance_id, chef_node_name|
       # delete the instance using default chef node name
-      output = @latest_output
-      @latest_output = nil
-      match = output.match("Instance ID:\s(.*)")
-      if match && match.length > 1
-        instance_id = match[1]
-        chef_node_name = output.match("Bootstrapping with node name '(.+)'")[1]
-        puts "Clean Up: Terminating instance #{instance_id}."
-        params = min_delete_params
-        params['--instance-id'] = instance_id
-        params['--purge'] = true
-        shell = run_server_delete(params, 'test_oracle_linux_delete_with_purge')
-        validate_delete_output(shell, chef_node_name)
-      end
+      params = min_delete_params
+      params['--instance-id'] = instance_id
+      params['--purge'] = true
+      shell = run_server_delete(params, 'test_oracle_linux_delete_with_purge')
+      validate_delete_output(shell, chef_node_name)
     end
   end
 
@@ -115,20 +120,13 @@ describe 'server create command' do
     shell = run_server_create(params, 'test_oracle_linux_all_params')
     validate_output(shell, params)
     expect(shell.stdout).to include(params['--display-name'])
-    unless @latest_output.nil?
+    delete_and_purge do |instance_id|
       # delete the instance using default chef node name
-      output = @latest_output
-      @latest_output = nil
-      match = output.match("Instance ID:\s(.*)")
-      if match && match.length > 1
-        instance_id = match[1]
-        puts "Clean Up: Terminating instance #{instance_id}."
-        params = min_delete_params
-        params['--instance-id'] = instance_id
-        params['--purge'] = true
-        shell = run_server_delete(params, 'test_oracle_linux_delete_with_non_default_displayname')
-        validate_delete_output(shell, extra_params['--display-name'])
-      end
+      params = min_delete_params
+      params['--instance-id'] = instance_id
+      params['--purge'] = true
+      shell = run_server_delete(params, 'test_oracle_linux_delete_with_non_default_displayname')
+      validate_delete_output(shell, extra_params['--display-name'])
     end
   end
 
@@ -138,22 +136,14 @@ describe 'server create command' do
     params['--ssh-user'] = 'ubuntu'
     shell = run_server_create(params, 'test_ubuntu')
     validate_output(shell, params)
-    unless @latest_output.nil?
+    delete_and_purge do |instance_id, chef_node_name|
       # delete the instance using specified chef node name
-      output = @latest_output
-      @latest_output = nil
-      match = output.match("Instance ID:\s(.*)")
-      if match && match.length > 1
-        instance_id = match[1]
-        chef_node_name = output.match("Bootstrapping with node name '(.+)'")[1]
-        puts "Clean Up: Terminating instance #{instance_id}."
-        params = min_delete_params
-        params['--instance-id'] = instance_id
-        params['--purge'] = true
-        params['--node-name'] = chef_node_name
-        shell = run_server_delete(params, 'test_ubuntu_delete')
-        validate_delete_output(shell, chef_node_name)
-      end
+      params = min_delete_params
+      params['--instance-id'] = instance_id
+      params['--purge'] = true
+      params['--node-name'] = chef_node_name
+      shell = run_server_delete(params, 'test_ubuntu_delete')
+      validate_delete_output(shell, chef_node_name)
     end
   end
 end

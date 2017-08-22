@@ -31,12 +31,12 @@ class Chef
 
       option :purge,
              long: '--purge',
-             description: 'Also remove node from Chef server. Chef node name defaults to the instance display name unless node-name is specified.'
+             description: 'Remove the corresponding node from the Chef Server. The instance display name will be used as the node name, unless --node-name is specified.'
 
       option :chef_node_name,
              short: '-N NAME',
              long: '--node-name NAME',
-             description: 'The Chef node name being removed. If not specified, the instance display name will be used.'
+             description: 'The name of the Chef node to be removed when using the --purge option. If not specified, the instance display name will be used.'
 
       def run
         $stdout.sync = true

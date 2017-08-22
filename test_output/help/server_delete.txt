@@ -3,7 +3,7 @@ knife bmcs server delete --help
 knife bmcs server delete (options)
         --bmcs-config-file FILE      The path to the Oracle BMCS config file. Default: ~/.oraclebmc/config
         --bmcs-profile PROFILE       The profile to load from the Oracle BMCS config file. Default: DEFAULT
-    -N, --node-name NAME             The Chef node name being removed. If not specified, the instance display name will be used.
+    -N, --node-name NAME             The name of the Chef node to be removed when using the --purge option. If not specified, the instance display name will be used.
     -s, --server-url URL             Chef Server URL
         --chef-zero-host HOST        Host to start chef-zero on
         --chef-zero-port PORT        Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works.
@@ -23,7 +23,7 @@ knife bmcs server delete (options)
     -z, --local-mode                 Point knife commands at local repository instead of server
     -u, --user USER                  API Client Username
         --print-after                Show the data after a destructive operation
-        --purge                      Also remove node from Chef server. Chef node name defaults to the instance display name unless node-name is specified.
+        --purge                      Remove the corresponding node from the Chef Server. The instance display name will be used as the node name, unless --node-name is specified.
         --region REGION              The region to make calls against.  (e.g., `us-ashburn-1`)
     -V, --verbose                    More verbose output. Use twice for max verbosity
     -v, --version                    Show chef version
