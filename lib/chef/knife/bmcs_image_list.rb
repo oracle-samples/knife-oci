@@ -30,8 +30,7 @@ class Chef
         list_for_display, last_response = get_display_results(options) do |client_options, first_row|
           response = compute_client.list_images(compartment_id, client_options)
 
-          items = response_to_list(response,
-                                   columns, include_headings: first_row) do |image|
+          items = response_to_list(response, columns, include_headings: first_row) do |image|
             [image.display_name, image.id, image.operating_system, image.operating_system_version]
           end
           [response, items]

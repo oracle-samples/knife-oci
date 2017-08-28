@@ -40,8 +40,7 @@ class Chef
         list_for_display, last_response = get_display_results(options) do |client_options, first_row|
           response = compute_client.list_shapes(compartment_id, client_options)
 
-          items = response_to_list(response,
-                                   columns, include_headings: first_row) do |item|
+          items = response_to_list(response, columns, include_headings: first_row) do |item|
             [item.shape]
           end
           [response, items]
