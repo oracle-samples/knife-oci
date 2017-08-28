@@ -57,10 +57,11 @@ def run_tests(output_format)
   it "shows warning #{output_format} when truncated" do
     knife_bmcs_compartment_list.config = config
     knife_bmcs_compartment_list.config[:format] = output_format
+    knife_bmcs_compartment_list.config[:limit] = 1
     response = multi_response
     response.headers['opc-next-page'] = 'page2'
 
-    allow(knife_bmcs_compartment_list.identity_client).to receive(:list_compartments).and_return(response)
+    allow(knife_bmcs_compartment_list.identity_client).to receive(:list_compartments).and_return(response, empty_response)
     expect(knife_bmcs_compartment_list.ui).to receive(receive_type)
     expect(knife_bmcs_compartment_list.ui).to receive(:warn).with('This list has been truncated. To view more items, increase the limit.')
 
@@ -110,12 +111,12 @@ describe Chef::Knife::BmcsCompartmentList do
 
     let(:empty_response) do
       double(data: [],
-             headers: { 'opc-next-page' => 'aaaaaaaaaaaaaaaa' })
+             headers: {})
     end
 
     let(:nil_response) do
       double(data: nil,
-             headers: { 'opc-next-page' => 'aaaaaaaaaaaaaaaa' })
+             headers: {})
     end
 
     run_tests('summary')

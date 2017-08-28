@@ -4,6 +4,7 @@ require './spec/spec_helper'
 require 'json'
 require 'chef/knife/bmcs_vcn_list'
 
+# rubocop:disable Metrics/AbcSize
 def run_tests(output_format)
   receive_type = output_format == 'summary' ? :list : :output
 
@@ -43,10 +44,11 @@ def run_tests(output_format)
   it "warns #{output_format} when truncated" do
     knife_bmcs_vcn_list.config = config
     knife_bmcs_vcn_list.config[:format] = output_format
+    knife_bmcs_vcn_list.config[:limit] = 1
     response = multi_response
     response.headers['opc-next-page'] = 'page2'
 
-    allow(knife_bmcs_vcn_list.network_client).to receive(:list_vcns).and_return(response)
+    allow(knife_bmcs_vcn_list.network_client).to receive(:list_vcns).and_return(response, empty_response)
     expect(knife_bmcs_vcn_list.ui).to receive(receive_type)
     expect(knife_bmcs_vcn_list.ui).to receive(:warn).with('This list has been truncated. To view more items, increase the limit.')
 

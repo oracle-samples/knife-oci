@@ -25,19 +25,20 @@ class Chef
         options = {}
         options[:limit] = config[:limit] if config[:limit]
 
-        response = identity_client.list_compartments(bmcs_config.tenancy, options)
-        # Check whether there is a next page to decide whether to show an 'output is truncated' warning.
-        # TODO: expected to be addressed server-side in a future release at which point this special
-        # handling can be removed.
-        show_truncated_warning = false
-        if response && response.headers.include?('opc-next-page')
-          response_page2 = identity_client.list_compartments(bmcs_config.tenancy, options.merge(page: response.headers['opc-next-page']))
-          show_truncated_warning = response_page2 && response_page2.data && !response_page2.data.empty?
+        columns = ['Display Name', 'ID']
+
+        list_for_display, last_response = get_display_results(options) do |client_options, first_row|
+          response = identity_client.list_compartments(bmcs_config.tenancy, client_options)
+
+          items = response_to_list(response,
+                                   columns, include_headings: first_row) do |item|
+            [item.name, item.id]
+          end
+          [response, items]
         end
 
-        display_list(response, ['Display Name', 'ID'], warn_on_truncated: show_truncated_warning) do |item|
-          [item.name, item.id]
-        end
+        display_list_from_array(list_for_display, columns.length)
+        warn_if_page_is_truncated(last_response)
       end
     end
   end

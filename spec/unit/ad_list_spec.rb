@@ -4,7 +4,6 @@ require './spec/spec_helper'
 require 'json'
 require 'chef/knife/bmcs_ad_list'
 
-# rubocop:disable Metrics/AbcSize
 def run_tests(output_format)
   receive_type = output_format == 'summary' ? :list : :output
 
@@ -37,18 +36,6 @@ def run_tests(output_format)
     allow(knife_bmcs_ad_list.identity_client).to receive(:list_availability_domains).and_return(nil_response)
     expect(knife_bmcs_ad_list.ui).to receive(receive_type)
     expect(knife_bmcs_ad_list.ui).not_to receive(:warn)
-
-    knife_bmcs_ad_list.run
-  end
-
-  it "warns #{output_format} when truncated" do
-    knife_bmcs_ad_list.config = config
-    knife_bmcs_ad_list.config[:format] = output_format
-    response.headers['opc-next-page'] = 'page2'
-
-    allow(knife_bmcs_ad_list.identity_client).to receive(:list_availability_domains).and_return(response)
-    expect(knife_bmcs_ad_list.ui).to receive(receive_type)
-    expect(knife_bmcs_ad_list.ui).to receive(:warn).with('This list has been truncated. To view more items, increase the limit.')
 
     knife_bmcs_ad_list.run
   end

@@ -25,11 +25,20 @@ class Chef
         options = {}
         options[:limit] = config[:limit] if config[:limit]
 
-        response = compute_client.list_images(compartment_id, options)
+        columns = ['Display Name', 'ID', 'OS', 'OS Version']
 
-        display_list(response, ['Display Name', 'ID', 'OS', 'OS Version']) do |image|
-          [image.display_name, image.id, image.operating_system, image.operating_system_version]
+        list_for_display, last_response = get_display_results(options) do |client_options, first_row|
+          response = compute_client.list_images(compartment_id, client_options)
+
+          items = response_to_list(response,
+                                   columns, include_headings: first_row) do |image|
+            [image.display_name, image.id, image.operating_system, image.operating_system_version]
+          end
+          [response, items]
         end
+
+        display_list_from_array(list_for_display, columns.length)
+        warn_if_page_is_truncated(last_response)
       end
     end
   end

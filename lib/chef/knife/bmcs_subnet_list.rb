@@ -30,11 +30,20 @@ class Chef
         options = {}
         options[:limit] = config[:limit] if config[:limit]
 
-        response = network_client.list_subnets(compartment_id, config[:vcn_id], options)
+        columns = ['Display Name', 'ID', 'CIDR Block', 'Availability Domain', 'State']
 
-        display_list(response, ['Display Name', 'ID', 'CIDR Block', 'Availability Domain', 'State']) do |item|
-          [item.display_name, item.id, item.cidr_block, item.availability_domain, item.lifecycle_state]
+        list_for_display, last_response = get_display_results(options) do |client_options, first_row|
+          response = network_client.list_subnets(compartment_id, config[:vcn_id], client_options)
+
+          items = response_to_list(response,
+                                   columns, include_headings: first_row) do |item|
+            [item.display_name, item.id, item.cidr_block, item.availability_domain, item.lifecycle_state]
+          end
+          [response, items]
         end
+
+        display_list_from_array(list_for_display, columns.length)
+        warn_if_page_is_truncated(last_response)
       end
     end
   end

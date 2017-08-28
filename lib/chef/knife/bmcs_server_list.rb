@@ -26,14 +26,22 @@ class Chef
         options = {}
         options[:limit] = config[:limit] if config[:limit]
 
-        response = compute_client.list_instances(compartment_id, options)
+        columns = ['Display Name', 'State', 'ID']
 
-        display_list(response,
-                     ['Display Name', 'State', 'ID']) do |item|
-          [item.display_name,
-           item.lifecycle_state,
-           item.id]
+        list_for_display, last_response = get_display_results(options) do |client_options, first_row|
+          response = compute_client.list_instances(compartment_id, client_options)
+
+          items = response_to_list(response,
+                                   columns, include_headings: first_row) do |item|
+            [item.display_name,
+             item.lifecycle_state,
+             item.id]
+          end
+          [response, items]
         end
+
+        display_list_from_array(list_for_display, columns.length)
+        warn_if_page_is_truncated(last_response)
       end
     end
   end
