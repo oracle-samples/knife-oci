@@ -40,7 +40,7 @@ class Chef
 
       def lookup_compartment_name(compartment_id)
         compartment = identity_client.get_compartment(compartment_id, {})
-        compartment.data.description || compartment.data.name
+        compartment.data.name
       end
 
       def lookup_image_name(image_id)
