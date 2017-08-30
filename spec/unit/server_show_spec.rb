@@ -16,10 +16,10 @@ def run_tests(output_format)
     allow(knife_bmcs_server_show.compute_client).to receive(:get_instance).and_return(response)
     allow(knife_bmcs_server_show.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
     allow(knife_bmcs_server_show.network_client).to receive(:get_vnic).and_return(double(data: vnic_info))
+    allow(knife_bmcs_server_show.network_client).to receive(:get_subnet).and_return(double(data: subnet1))
     allow(knife_bmcs_server_show.identity_client).to receive(:get_compartment).and_return(double(data: compartmentA))
     allow(knife_bmcs_server_show.compute_client).to receive(:get_image).and_return(double(data: image1))
     allow(knife_bmcs_server_show.network_client).to receive(:get_vcn).and_return(double(data: vcn1))
-    allow(knife_bmcs_server_show.network_client).to receive(:get_subnet).and_return(double(data: subnet1))
     expect(knife_bmcs_server_show.ui).to receive(receive_type).at_least(7).times
     expect(knife_bmcs_server_show.ui).not_to receive(:warn)
 
@@ -32,10 +32,38 @@ def run_tests(output_format)
 
     allow(knife_bmcs_server_show.compute_client).to receive(:get_instance).and_return(response)
     allow(knife_bmcs_server_show.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
-    allow(knife_bmcs_server_show.network_client).to receive(:get_vnic).and_raise(OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized'))
+    allow(knife_bmcs_server_show.network_client).to receive(:get_vnic).and_raise(
+      OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
+    )
+    allow(knife_bmcs_server_show.network_client).to receive(:get_subnet).and_return(double(data: subnet1))
     allow(knife_bmcs_server_show.identity_client).to receive(:get_compartment).and_return(double(data: compartmentA))
     allow(knife_bmcs_server_show.compute_client).to receive(:get_image).and_return(double(data: image1))
     allow(knife_bmcs_server_show.network_client).to receive(:get_vcn).and_return(double(data: vcn1))
+    expect(knife_bmcs_server_show.ui).to receive(receive_type).at_least(7).times
+    expect(knife_bmcs_server_show.ui).not_to receive(:warn)
+
+    knife_bmcs_server_show.run
+  end
+
+  it "shows #{output_format} view with many failed requests" do
+    knife_bmcs_server_show.config = config
+    knife_bmcs_server_show.config[:format] = output_format
+
+    allow(knife_bmcs_server_show.compute_client).to receive(:get_instance).and_return(response)
+    allow(knife_bmcs_server_show.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
+    allow(knife_bmcs_server_show.network_client).to receive(:get_vnic).and_return(double(data: vnic_info))
+    allow(knife_bmcs_server_show.network_client).to receive(:get_subnet).and_raise(
+      OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
+    )
+    allow(knife_bmcs_server_show.identity_client).to receive(:get_compartment).and_raise(
+      OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
+    )
+    allow(knife_bmcs_server_show.compute_client).to receive(:get_image).and_raise(
+      OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
+    )
+    allow(knife_bmcs_server_show.network_client).to receive(:get_vcn).and_raise(
+      OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
+    )
     expect(knife_bmcs_server_show.ui).to receive(receive_type).at_least(7).times
     expect(knife_bmcs_server_show.ui).not_to receive(:warn)
 

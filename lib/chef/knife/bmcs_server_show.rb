@@ -40,16 +40,25 @@ class Chef
 
       def lookup_compartment_name(compartment_id)
         compartment = identity_client.get_compartment(compartment_id, {})
+      rescue OracleBMC::Errors::ServiceError => service_error
+        raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+      else
         compartment.data.name
       end
 
       def lookup_image_name(image_id)
         image = compute_client.get_image(image_id, {})
+      rescue OracleBMC::Errors::ServiceError => service_error
+        raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+      else
         image.data.display_name
       end
 
       def lookup_vcn_name(vcn_id)
         vcn = network_client.get_vcn(vcn_id, {})
+      rescue OracleBMC::Errors::ServiceError => service_error
+        raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+      else
         vcn.data.display_name
       end
 
@@ -66,13 +75,18 @@ class Chef
       def add_vnic_details(vnic)
         vnic.extend VnicDetails
 
-        subnet = network_client.get_subnet(vnic.subnet_id, {})
-        vnic.fqdn = vnic.hostname_label + '.' + subnet.data.subnet_domain_name if
-          subnet.data && subnet.data.subnet_domain_name && vnic.hostname_label
-        vnic.subnet_name = subnet.data.display_name if
-          subnet.data && subnet.data.display_name
-        # piggyback the vcn_id from here, so we can avoid a few network calls
-        vnic.vcn_id = subnet.data.vcn_id
+        begin
+          subnet = network_client.get_subnet(vnic.subnet_id, {})
+        rescue OracleBMC::Errors::ServiceError => service_error
+          raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+        else
+          vnic.fqdn = vnic.hostname_label + '.' + subnet.data.subnet_domain_name if
+            subnet.data && subnet.data.subnet_domain_name && vnic.hostname_label
+          vnic.subnet_name = subnet.data.display_name if
+            subnet.data && subnet.data.display_name
+          # piggyback the vcn_id from here, so we can avoid a few network calls
+          vnic.vcn_id = subnet.data.vcn_id
+        end
       end
 
       def run
@@ -85,10 +99,10 @@ class Chef
           next unless vnic.lifecycle_state == 'ATTACHED'
           begin
             vnic_info = network_client.get_vnic(vnic.vnic_id, {})
-            add_vnic_details(vnic_info.data)
           rescue OracleBMC::Errors::ServiceError => service_error
             raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
           else
+            add_vnic_details(vnic_info.data)
             # for now, only display information for primary vnic
             if vnic_info.data.is_primary == true
               vnic_array.push(vnic_info.data)
