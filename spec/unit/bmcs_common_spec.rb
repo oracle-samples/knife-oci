@@ -42,6 +42,7 @@ describe 'bmcs common utilities' do
 
       allow(knife_bmcs_subnet_list.network_client).to receive(:list_subnets).and_return(empty_response)
       expect(knife_bmcs_subnet_list.ui).not_to receive(:warn)
+      expect(knife_bmcs_subnet_list.ui).to receive(:output)
       expect(knife_bmcs_subnet_list.bmcs_config.region).to eq('overridden-region')
       expect(knife_bmcs_subnet_list.compute_client.region).to eq('overridden-region')
 

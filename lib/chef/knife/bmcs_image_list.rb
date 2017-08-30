@@ -27,14 +27,16 @@ class Chef
 
         columns = ['Display Name', 'ID', 'OS', 'OS Version']
 
-        list_for_display, last_response = get_display_results(options) do |client_options, first_row|
+        list_for_display = config[:format] == 'summary' ? bold(columns) : []
+        list_data, last_response = get_display_results(options) do |client_options|
           response = compute_client.list_images(compartment_id, client_options)
 
-          items = response_to_list(response, columns, include_headings: first_row) do |image|
+          items = response_to_list(response) do |image|
             [image.display_name, image.id, image.operating_system, image.operating_system_version]
           end
           [response, items]
         end
+        list_for_display += list_data
 
         display_list_from_array(list_for_display, columns.length)
         warn_if_page_is_truncated(last_response)

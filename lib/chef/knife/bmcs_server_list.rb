@@ -28,16 +28,18 @@ class Chef
 
         columns = ['Display Name', 'State', 'ID']
 
-        list_for_display, last_response = get_display_results(options) do |client_options, first_row|
+        list_for_display = config[:format] == 'summary' ? bold(columns) : []
+        list_data, last_response = get_display_results(options) do |client_options|
           response = compute_client.list_instances(compartment_id, client_options)
 
-          items = response_to_list(response, columns, include_headings: first_row) do |item|
+          items = response_to_list(response) do |item|
             [item.display_name,
              item.lifecycle_state,
              item.id]
           end
           [response, items]
         end
+        list_for_display += list_data
 
         display_list_from_array(list_for_display, columns.length)
         warn_if_page_is_truncated(last_response)

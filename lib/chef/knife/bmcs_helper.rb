@@ -67,35 +67,31 @@ class Chef
 
         num_fetched_results = 0
         list_for_display = []
-        first_row = true
         response = nil
         loop do
-          response, new_items = yield(options, first_row)
+          response, new_items = yield(options)
 
           list_for_display += new_items
           num_fetched_results += response.data.length if response.data
           break if next_page_token(response).nil?
           break if max_results && num_fetched_results >= max_results
-          first_row = false
           options[:page] = next_page_token(response)
           options[:limit] = (max_results - num_fetched_results).to_s if max_results
         end
         [list_for_display, response]
       end
 
-      # Return data in summary mode format, optionally including column headings.
-      def _summary_list(list, columns, include_headings: true)
-        list_for_display = []
-
-        unless columns.empty?
-          if include_headings
-            columns.each do |column|
-              list_for_display += [ui.color(column, :bold)]
-            end
-
-            list_for_display = list_for_display.flatten.compact
-          end
+      def bold(list)
+        bolded_list = []
+        list.each do |column|
+          bolded_list += [ui.color(column, :bold)]
         end
+        bolded_list.flatten.compact
+      end
+
+      # Return data in summary mode format
+      def _summary_list(list)
+        list_for_display = []
 
         if list
           list.each do |item|
@@ -119,14 +115,14 @@ class Chef
 
       # Return a one dimensional array of data based on API response.
       # Result is compatible with display_list_from_array.
-      def response_to_list(response, columns, include_headings: true, &block)
+      def response_to_list(response, &block)
         list = if response.data.nil?
                  []
                else
                  response.data.is_a?(Array) ? response.data : [response.data]
                end
 
-        return _summary_list(list, columns, include_headings: include_headings, &block) if config[:format] == 'summary'
+        return _summary_list(list, &block) if config[:format] == 'summary'
         _non_summary_list(list)
       end
 
@@ -143,15 +139,6 @@ class Chef
         else
           ui.output(list_for_display)
         end
-      end
-
-      # Display a list using an API response object as input.
-      def display_list(response, columns, warn_on_truncated: true, include_headings: true, &block)
-        list_for_display = response_to_list(response, columns, include_headings: include_headings, &block)
-        width = columns.empty? ? 1 : columns.length
-        display_list_from_array(list_for_display, width)
-
-        warn_if_page_is_truncated(response) if warn_on_truncated
       end
 
       # Return a true or false with the confirmation result.

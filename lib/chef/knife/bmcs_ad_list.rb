@@ -21,10 +21,10 @@ class Chef
         options = {}
         columns = []
 
-        list_for_display, last_response = get_display_results(options) do |_client_options, first_row|
-          response = identity_client.list_availability_domains(compartment_id)
+        list_for_display, last_response = get_display_results(options) do |client_options|
+          response = identity_client.list_availability_domains(compartment_id, client_options)
 
-          items = response_to_list(response, columns, include_headings: first_row) do |item|
+          items = response_to_list(response) do |item|
             [item.name]
           end
           [response, items]
