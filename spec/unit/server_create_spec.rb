@@ -16,6 +16,7 @@ describe Chef::Knife::BmcsServerCreate do
              display_name: 'myname',
              id: '12345',
              image_id: 'myimage',
+             lifecycle_state: 'RUNNING',
              region: 'phx',
              shape: 'round',
              subnet_id: 'supersubnet')
