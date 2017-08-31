@@ -57,45 +57,88 @@ class Chef
         ui.warn('This list has been truncated. To view more items, increase the limit.') if response.headers.include? 'opc-next-page'
       end
 
-      # TODO: Method should be refactored to reduce complexity.
-      # rubocop:disable Metrics/PerceivedComplexity
-      def display_list(response, columns, warn_on_truncated: true)
+      def next_page_token(response)
+        return response.headers['opc-next-page'] if response.headers.include? 'opc-next-page'
+        nil
+      end
+
+      def get_display_results(options)
+        max_results = config[:limit] ? Integer(config[:limit]) : nil
+
+        num_fetched_results = 0
+        list_for_display = []
+        response = nil
+        loop do
+          response, new_items = yield(options)
+
+          list_for_display += new_items
+          num_fetched_results += response.data.length if response.data
+          break if next_page_token(response).nil?
+          break if max_results && num_fetched_results >= max_results
+          options[:page] = next_page_token(response)
+          options[:limit] = (max_results - num_fetched_results).to_s if max_results
+        end
+        [list_for_display, response]
+      end
+
+      def bold(list)
+        bolded_list = []
+        list.each do |column|
+          bolded_list += [ui.color(column, :bold)]
+        end
+        bolded_list.flatten.compact
+      end
+
+      # Return data in summary mode format
+      def _summary_list(list)
+        list_for_display = []
+
+        if list
+          list.each do |item|
+            display_item = yield(item, list_for_display)
+            list_for_display += display_item if display_item
+          end
+        end
+
+        list_for_display
+      end
+
+      # Return data in non-summary mode format.
+      def _non_summary_list(list)
+        list_for_display = []
+        list.each do |item|
+          list_for_display += [item.to_hash]
+        end
+
+        list_for_display
+      end
+
+      # Return a one dimensional array of data based on API response.
+      # Result is compatible with display_list_from_array.
+      def response_to_list(response, &block)
         list = if response.data.nil?
                  []
                else
                  response.data.is_a?(Array) ? response.data : [response.data]
                end
-        list_for_display = []
 
+        return _summary_list(list, &block) if config[:format] == 'summary'
+        _non_summary_list(list)
+      end
+
+      # Display a list using a one dimensional array as input
+      #
+      # Example output in summary mode:
+      # display_list_from_array(['a','b', 'c', 'd'], 2)
+      # a  b
+      # c  d
+      def display_list_from_array(list_for_display, num_columns)
         if config[:format] == 'summary'
-          width = 1
-
-          unless columns.empty?
-            columns.each do |column|
-              list_for_display += [ui.color(column, :bold)]
-            end
-
-            list_for_display = list_for_display.flatten.compact
-            width = columns.length
-          end
-
-          if list
-            list.each do |item|
-              display_item = yield(item, list_for_display)
-              list_for_display += display_item if display_item
-            end
-          end
-
-          puts ui.list(list_for_display, :uneven_columns_across, width)
+          num_columns = 1 if num_columns < 1
+          puts ui.list(list_for_display, :uneven_columns_across, num_columns)
         else
-          list.each do |item|
-            list_for_display += [item.to_hash]
-          end
-
           ui.output(list_for_display)
         end
-
-        warn_if_page_is_truncated(response) if warn_on_truncated
       end
 
       # Return a true or false with the confirmation result.
