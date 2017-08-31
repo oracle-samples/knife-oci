@@ -103,10 +103,10 @@ class Chef
             raise unless service_error.service_code == 'NotAuthorizedOrNotFound'
           else
             add_vnic_details(vnic_info.data)
-            # for now, only display information for primary vnic
             if vnic_info.data.is_primary == true
+              vnic_array.unshift(vnic_info.data) # make primary interface first in the array
+            else
               vnic_array.push(vnic_info.data)
-              break
             end
           end
         end
