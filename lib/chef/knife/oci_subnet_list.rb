@@ -1,20 +1,20 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
 require 'chef/knife'
-require 'chef/knife/bmcs_common_options'
-require 'chef/knife/bmcs_helper'
+require 'chef/knife/oci_common_options'
+require 'chef/knife/oci_helper'
 
 class Chef
   class Knife
-    # List BMCS subnets in a VCN.
-    class BmcsSubnetList < Knife
-      banner 'knife bmcs subnet list (options)'
+    # List OCI subnets in a VCN.
+    class OciSubnetList < Knife
+      banner 'knife oci subnet list (options)'
 
-      include BmcsHelper
-      include BmcsCommonOptions
+      include OciHelper
+      include OciCommonOptions
 
       deps do
-        require 'oraclebmc'
+        require 'oci'
       end
 
       option :limit,

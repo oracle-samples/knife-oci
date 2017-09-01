@@ -1,20 +1,20 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
 require 'chef/knife'
-require 'chef/knife/bmcs_common_options'
-require 'chef/knife/bmcs_helper'
+require 'chef/knife/oci_common_options'
+require 'chef/knife/oci_helper'
 
 class Chef
   class Knife
-    # List available images
-    class BmcsImageList < Knife
-      banner 'knife bmcs image list (options)'
+    # List OCI VCNs. Note that this lists all VCNs in a compartment, not just those that are set up as Chef nodes.
+    class OciVcnList < Knife
+      banner 'knife oci vcn list (options)'
 
-      include BmcsHelper
-      include BmcsCommonOptions
+      include OciHelper
+      include OciCommonOptions
 
       deps do
-        require 'oraclebmc'
+        require 'oci'
       end
 
       option :limit,
@@ -25,14 +25,14 @@ class Chef
         options = {}
         options[:limit] = config[:limit] if config[:limit]
 
-        columns = ['Display Name', 'ID', 'OS', 'OS Version']
+        columns = ['Display Name', 'ID', 'CIDR Block', 'State']
 
         list_for_display = config[:format] == 'summary' ? bold(columns) : []
         list_data, last_response = get_display_results(options) do |client_options|
-          response = compute_client.list_images(compartment_id, client_options)
+          response = network_client.list_vcns(compartment_id, client_options)
 
-          items = response_to_list(response) do |image|
-            [image.display_name, image.id, image.operating_system, image.operating_system_version]
+          items = response_to_list(response) do |item|
+            [item.display_name, item.id, item.cidr_block, item.lifecycle_state]
           end
           [response, items]
         end

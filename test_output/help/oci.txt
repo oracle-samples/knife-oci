@@ -1,0 +1,21 @@
+knife oci  --help
+
+Available oci subcommands: (for details, knife SUB-COMMAND --help)
+
+** OCI COMMANDS **
+knife oci ad list (options)
+knife oci compartment list (options)
+knife oci image list (options)
+knife oci server create (options)
+knife oci server delete (options)
+knife oci server list (options)
+knife oci server show (options)
+knife oci shape list (options)
+knife oci subnet list (options)
+knife oci vcn list (options)
+
+
+
++++ STDERR +++
+
+FATAL: Cannot find subcommand for: 'oci --help'

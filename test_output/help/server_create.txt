@@ -1,9 +1,7 @@
-knife bmcs server create --help
+knife oci server create --help
 
-knife bmcs server create (options)
+knife oci server create (options)
         --availability-domain AD     The Availability Domain of the instance. (required)
-        --bmcs-config-file FILE      The path to the Oracle BMCS config file. Default: ~/.oraclebmc/config
-        --bmcs-profile PROFILE       The profile to load from the Oracle BMCS config file. Default: DEFAULT
     -N, --node-name NAME             The Chef node name for the new node. If not specified, the instance display name will be used.
     -s, --server-url URL             Chef Server URL
         --chef-zero-host HOST        Host to start chef-zero on
@@ -28,6 +26,8 @@ knife bmcs server create (options)
     -z, --local-mode                 Point knife commands at local repository instead of server
         --metadata METADATA          Custom metadata key/value pairs in JSON format.
     -u, --user USER                  API Client Username
+        --oci-config-file FILE       The path to the OCI config file. Default: ~/.oci/config
+        --oci-profile PROFILE        The profile to load from the OCI config file. Default: DEFAULT
         --print-after                Show the data after a destructive operation
         --region REGION              The region to make calls against.  (e.g., `us-ashburn-1`)
     -r, --run-list RUN_LIST          A comma-separated list of roles or recipes.

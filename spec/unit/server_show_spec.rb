@@ -3,88 +3,88 @@
 require './spec/spec_helper'
 require 'json'
 require 'date'
-require 'chef/knife/bmcs_server_show'
+require 'chef/knife/oci_server_show'
 
 # rubocop:disable Metrics/AbcSize
 def run_tests(output_format)
   receive_type = output_format == 'text' ? :msg : :output
 
   it "shows #{output_format} view" do
-    knife_bmcs_server_show.config = config
-    knife_bmcs_server_show.config[:format] = output_format
+    knife_oci_server_show.config = config
+    knife_oci_server_show.config[:format] = output_format
 
-    allow(knife_bmcs_server_show.compute_client).to receive(:get_instance).and_return(response)
-    allow(knife_bmcs_server_show.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
-    allow(knife_bmcs_server_show.network_client).to receive(:get_vnic).and_return(double(data: vnic_info))
-    allow(knife_bmcs_server_show.network_client).to receive(:get_subnet).and_return(double(data: subnet1))
-    allow(knife_bmcs_server_show.identity_client).to receive(:get_compartment).and_return(double(data: compartmentA))
-    allow(knife_bmcs_server_show.compute_client).to receive(:get_image).and_return(double(data: image1))
-    allow(knife_bmcs_server_show.network_client).to receive(:get_vcn).and_return(double(data: vcn1))
-    expect(knife_bmcs_server_show.ui).to receive(receive_type).at_least(7).times
-    expect(knife_bmcs_server_show.ui).not_to receive(:warn)
+    allow(knife_oci_server_show.compute_client).to receive(:get_instance).and_return(response)
+    allow(knife_oci_server_show.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
+    allow(knife_oci_server_show.network_client).to receive(:get_vnic).and_return(double(data: vnic_info))
+    allow(knife_oci_server_show.network_client).to receive(:get_subnet).and_return(double(data: subnet1))
+    allow(knife_oci_server_show.identity_client).to receive(:get_compartment).and_return(double(data: compartmentA))
+    allow(knife_oci_server_show.compute_client).to receive(:get_image).and_return(double(data: image1))
+    allow(knife_oci_server_show.network_client).to receive(:get_vcn).and_return(double(data: vcn1))
+    expect(knife_oci_server_show.ui).to receive(receive_type).at_least(7).times
+    expect(knife_oci_server_show.ui).not_to receive(:warn)
 
-    knife_bmcs_server_show.run
+    knife_oci_server_show.run
   end
 
   it "shows #{output_format} view with failed get_vnic request" do
-    knife_bmcs_server_show.config = config
-    knife_bmcs_server_show.config[:format] = output_format
+    knife_oci_server_show.config = config
+    knife_oci_server_show.config[:format] = output_format
 
-    allow(knife_bmcs_server_show.compute_client).to receive(:get_instance).and_return(response)
-    allow(knife_bmcs_server_show.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
-    allow(knife_bmcs_server_show.network_client).to receive(:get_vnic).and_raise(
-      OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
+    allow(knife_oci_server_show.compute_client).to receive(:get_instance).and_return(response)
+    allow(knife_oci_server_show.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
+    allow(knife_oci_server_show.network_client).to receive(:get_vnic).and_raise(
+      OCI::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
     )
-    allow(knife_bmcs_server_show.network_client).to receive(:get_subnet).and_return(double(data: subnet1))
-    allow(knife_bmcs_server_show.identity_client).to receive(:get_compartment).and_return(double(data: compartmentA))
-    allow(knife_bmcs_server_show.compute_client).to receive(:get_image).and_return(double(data: image1))
-    allow(knife_bmcs_server_show.network_client).to receive(:get_vcn).and_return(double(data: vcn1))
-    expect(knife_bmcs_server_show.ui).to receive(receive_type).at_least(7).times
-    expect(knife_bmcs_server_show.ui).not_to receive(:warn)
+    allow(knife_oci_server_show.network_client).to receive(:get_subnet).and_return(double(data: subnet1))
+    allow(knife_oci_server_show.identity_client).to receive(:get_compartment).and_return(double(data: compartmentA))
+    allow(knife_oci_server_show.compute_client).to receive(:get_image).and_return(double(data: image1))
+    allow(knife_oci_server_show.network_client).to receive(:get_vcn).and_return(double(data: vcn1))
+    expect(knife_oci_server_show.ui).to receive(receive_type).at_least(7).times
+    expect(knife_oci_server_show.ui).not_to receive(:warn)
 
-    knife_bmcs_server_show.run
+    knife_oci_server_show.run
   end
 
   it "shows #{output_format} view with many failed requests" do
-    knife_bmcs_server_show.config = config
-    knife_bmcs_server_show.config[:format] = output_format
+    knife_oci_server_show.config = config
+    knife_oci_server_show.config[:format] = output_format
 
-    allow(knife_bmcs_server_show.compute_client).to receive(:get_instance).and_return(response)
-    allow(knife_bmcs_server_show.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
-    allow(knife_bmcs_server_show.network_client).to receive(:get_vnic).and_return(double(data: vnic_info))
-    allow(knife_bmcs_server_show.network_client).to receive(:get_subnet).and_raise(
-      OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
+    allow(knife_oci_server_show.compute_client).to receive(:get_instance).and_return(response)
+    allow(knife_oci_server_show.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
+    allow(knife_oci_server_show.network_client).to receive(:get_vnic).and_return(double(data: vnic_info))
+    allow(knife_oci_server_show.network_client).to receive(:get_subnet).and_raise(
+      OCI::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
     )
-    allow(knife_bmcs_server_show.identity_client).to receive(:get_compartment).and_raise(
-      OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
+    allow(knife_oci_server_show.identity_client).to receive(:get_compartment).and_raise(
+      OCI::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
     )
-    allow(knife_bmcs_server_show.compute_client).to receive(:get_image).and_raise(
-      OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
+    allow(knife_oci_server_show.compute_client).to receive(:get_image).and_raise(
+      OCI::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
     )
-    allow(knife_bmcs_server_show.network_client).to receive(:get_vcn).and_raise(
-      OracleBMC::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
+    allow(knife_oci_server_show.network_client).to receive(:get_vcn).and_raise(
+      OCI::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
     )
-    expect(knife_bmcs_server_show.ui).to receive(receive_type).at_least(7).times
-    expect(knife_bmcs_server_show.ui).not_to receive(:warn)
+    expect(knife_oci_server_show.ui).to receive(receive_type).at_least(7).times
+    expect(knife_oci_server_show.ui).not_to receive(:warn)
 
-    knife_bmcs_server_show.run
+    knife_oci_server_show.run
   end
 
   it "shows #{output_format} with nil list" do
-    knife_bmcs_server_show.config = config
-    knife_bmcs_server_show.config[:format] = output_format
+    knife_oci_server_show.config = config
+    knife_oci_server_show.config[:format] = output_format
 
-    allow(knife_bmcs_server_show.compute_client).to receive(:get_instance).and_return(nil_response)
-    expect(knife_bmcs_server_show.ui).not_to receive(:warn)
+    allow(knife_oci_server_show.compute_client).to receive(:get_instance).and_return(nil_response)
+    expect(knife_oci_server_show.ui).not_to receive(:warn)
 
-    expect { knife_bmcs_server_show.run }.to raise_error(SystemExit)
+    expect { knife_oci_server_show.run }.to raise_error(SystemExit)
   end
 end
 
-Chef::Knife::BmcsServerShow.load_deps
+Chef::Knife::OciServerShow.load_deps
 
-describe Chef::Knife::BmcsServerShow do
-  let(:knife_bmcs_server_show) { Chef::Knife::BmcsServerShow.new }
+describe Chef::Knife::OciServerShow do
+  let(:knife_oci_server_show) { Chef::Knife::OciServerShow.new }
 
   describe 'run server show' do
     let(:compartmentA) do
@@ -99,7 +99,7 @@ describe Chef::Knife::BmcsServerShow do
       {
         instance_id: 'ocid1.instance.oc1.test_server_show',
         compartment_id: 'compartmentA',
-        bmcs_config_file: DUMMY_CONFIG_FILE,
+        oci_config_file: DUMMY_CONFIG_FILE,
         format: 'summary'
       }
     end

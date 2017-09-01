@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2.0.0 - 2017-09-11
+### Changed
+- Changed the gem name from knife-bmcs to knife-oci, and changed all occurances of BMCS to OCI.
+
 ## 1.1.0 - 2017-08-16
 ### Added
 - List compartments command, 'knife bmcs compartment list'

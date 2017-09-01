@@ -6,6 +6,6 @@ log_location             STDOUT
 
 chef_server_url          'https://111.111.111.111/organizations/myinc'
 
-knife[:bmcs_config_file] = ENV['KNIFE_BMCS_CONFIG_FILE']
-knife[:bmcs_profile] = ENV['KNIFE_BMCS_PROFILE']
-knife[:compartment_id] = ENV['KNIFE_BMCS_COMPARTMENT']
+knife[:oci_config_file] = ENV['KNIFE_OCI_CONFIG_FILE']
+knife[:oci_profile] = ENV['KNIFE_OCI_PROFILE']
+knife[:compartment_id] = ENV['KNIFE_OCI_COMPARTMENT']

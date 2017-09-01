@@ -1,43 +1,52 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
 require 'chef/knife'
-require 'knife-bmcs/version'
+require 'knife-oci/version'
 
 # rubocop:disable Metrics/ModuleLength
 class Chef
   class Knife
-    # BMCS helper module
-    module BmcsHelper
-      def bmcs_config
-        unless @bmcs_config
-          # Load config and profile first from command line args if available, then from knife.rb, then use the default.
-          config_file = config[:bmcs_config_file] || Chef::Config[:knife][:bmcs_config_file] || OracleBMC::ConfigFileLoader::DEFAULT_CONFIG_FILE
-          profile = config[:bmcs_profile] || Chef::Config[:knife][:bmcs_profile] || OracleBMC::ConfigFileLoader::DEFAULT_PROFILE
-          @bmcs_config = OracleBMC::ConfigFileLoader.load_config(config_file_location: config_file, profile_name: profile)
-          @bmcs_config.region = config[:region] if config[:region]
+    # OCI helper module
+    module OciHelper
+      def oci_config
+        unless @oci_config
+          @oci_config = OCI::ConfigFileLoader.load_config(config_file_location: config_file_location, profile_name: config_file_profile)
+          @oci_config.region = config[:region] if config[:region]
 
-          @bmcs_config.additional_user_agent = "Oracle-ChefKnifeOCI/#{::Knife::BMCS::VERSION}"
+          @oci_config.additional_user_agent = "Oracle-ChefKnifeOCI/#{::Knife::OCI::VERSION}"
         end
 
-        @bmcs_config
+        @oci_config
+      end
+
+      def config_file_location
+        # Load first from command line args if available, then from knife.rb, then use the default.
+        # For backwards compatibility with knife-bmcs, if oci version is not found in knife.rb, then check for bmcs version.
+        config[:oci_config_file] || Chef::Config[:knife][:oci_config_file] || Chef::Config[:knife][:bmcs_config_file] || OCI::ConfigFileLoader::DEFAULT_CONFIG_FILE
+      end
+
+      def config_file_profile
+        # Load first from command line args if available, then from knife.rb, then use the default.
+        # For backwards compatibility with knife-bmcs, if oci version is not found in knife.rb, then check for bmcs version.
+        config[:oci_profile] || Chef::Config[:knife][:oci_profile] || Chef::Config[:knife][:bmcs_profile] || OCI::ConfigFileLoader::DEFAULT_PROFILE
       end
 
       def compute_client
-        @compute_client ||= OracleBMC::Core::ComputeClient.new(config: bmcs_config)
+        @compute_client ||= OCI::Core::ComputeClient.new(config: oci_config)
       end
 
       def network_client
-        @network_client ||= OracleBMC::Core::VirtualNetworkClient.new(config: bmcs_config)
+        @network_client ||= OCI::Core::VirtualNetworkClient.new(config: oci_config)
       end
 
       def identity_client
-        @identity_client ||= OracleBMC::Identity::IdentityClient.new(config: bmcs_config)
+        @identity_client ||= OCI::Identity::IdentityClient.new(config: oci_config)
       end
 
       # Get the compartment ID first from the command line args if available, then from the knife.rb
       # file, and if neither of those is specified then use the tenancy.
       def compartment_id
-        @compartment_id ||= config[:compartment_id] || Chef::Config[:knife][:compartment_id] || bmcs_config.tenancy
+        @compartment_id ||= config[:compartment_id] || Chef::Config[:knife][:compartment_id] || oci_config.tenancy
       end
 
       def error_and_exit(message)
@@ -157,8 +166,8 @@ class Chef
 
       def check_can_access_instance(instance_id)
         response = compute_client.get_instance(instance_id)
-        error_and_exit 'Instance is already in terminated state' if response && response.data && response.data.lifecycle_state == OracleBMC::Core::Models::Instance::LIFECYCLE_STATE_TERMINATED
-      rescue OracleBMC::Errors::ServiceError => service_error
+        error_and_exit 'Instance is already in terminated state' if response && response.data && response.data.lifecycle_state == OCI::Core::Models::Instance::LIFECYCLE_STATE_TERMINATED
+      rescue OCI::Errors::ServiceError => service_error
         raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
         error_and_exit 'Instance not authorized or not found'
       else
