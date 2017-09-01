@@ -2,6 +2,7 @@
 
 require 'chef/knife'
 require 'chef/knife/oci_helper'
+require 'chef/knife/oci_helper_show'
 require 'chef/knife/oci_common_options'
 
 class Chef
@@ -11,6 +12,7 @@ class Chef
       banner 'knife oci server create (options)'
 
       include OciHelper
+      include OciHelperShow
       include OciCommonOptions
 
       # Port for SSH - might want to parameterize this in the future.
