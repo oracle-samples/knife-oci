@@ -2,69 +2,69 @@
 
 require './spec/spec_helper'
 require 'json'
-require 'chef/knife/bmcs_server_list'
+require 'chef/knife/oci_server_list'
 
 # rubocop:disable Metrics/AbcSize
 def run_tests(output_format)
   receive_type = output_format == 'summary' ? :list : :output
 
   it "shows #{output_format} view" do
-    knife_bmcs_server_list.config = config
-    knife_bmcs_server_list.config[:format] = output_format
+    knife_oci_server_list.config = config
+    knife_oci_server_list.config[:format] = output_format
 
-    allow(knife_bmcs_server_list.compute_client).to receive(:list_instances).and_return(response)
-    expect(knife_bmcs_server_list.ui).to receive(receive_type)
-    expect(knife_bmcs_server_list.ui).not_to receive(:warn)
+    allow(knife_oci_server_list.compute_client).to receive(:list_instances).and_return(response)
+    expect(knife_oci_server_list.ui).to receive(receive_type)
+    expect(knife_oci_server_list.ui).not_to receive(:warn)
 
-    knife_bmcs_server_list.run
+    knife_oci_server_list.run
   end
 
   it "shows #{output_format} with empty list" do
-    knife_bmcs_server_list.config = config
-    knife_bmcs_server_list.config[:format] = output_format
+    knife_oci_server_list.config = config
+    knife_oci_server_list.config[:format] = output_format
 
-    allow(knife_bmcs_server_list.compute_client).to receive(:list_instances).and_return(empty_response)
-    expect(knife_bmcs_server_list.ui).to receive(receive_type)
-    expect(knife_bmcs_server_list.ui).not_to receive(:warn)
+    allow(knife_oci_server_list.compute_client).to receive(:list_instances).and_return(empty_response)
+    expect(knife_oci_server_list.ui).to receive(receive_type)
+    expect(knife_oci_server_list.ui).not_to receive(:warn)
 
-    knife_bmcs_server_list.run
+    knife_oci_server_list.run
   end
 
   it "shows #{output_format} with nil list" do
-    knife_bmcs_server_list.config = config
-    knife_bmcs_server_list.config[:format] = output_format
+    knife_oci_server_list.config = config
+    knife_oci_server_list.config[:format] = output_format
 
-    allow(knife_bmcs_server_list.compute_client).to receive(:list_instances).and_return(nil_response)
-    expect(knife_bmcs_server_list.ui).to receive(receive_type)
-    expect(knife_bmcs_server_list.ui).not_to receive(:warn)
+    allow(knife_oci_server_list.compute_client).to receive(:list_instances).and_return(nil_response)
+    expect(knife_oci_server_list.ui).to receive(receive_type)
+    expect(knife_oci_server_list.ui).not_to receive(:warn)
 
-    knife_bmcs_server_list.run
+    knife_oci_server_list.run
   end
 
   it "warns #{output_format} when truncated" do
-    knife_bmcs_server_list.config = config
-    knife_bmcs_server_list.config[:format] = output_format
-    knife_bmcs_server_list.config[:limit] = 1
+    knife_oci_server_list.config = config
+    knife_oci_server_list.config[:format] = output_format
+    knife_oci_server_list.config[:limit] = 1
     response.headers['opc-next-page'] = 'page2'
 
-    allow(knife_bmcs_server_list.compute_client).to receive(:list_instances).and_return(response, empty_response)
-    expect(knife_bmcs_server_list.ui).to receive(receive_type)
-    expect(knife_bmcs_server_list.ui).to receive(:warn).with('This list has been truncated. To view more items, increase the limit.')
+    allow(knife_oci_server_list.compute_client).to receive(:list_instances).and_return(response, empty_response)
+    expect(knife_oci_server_list.ui).to receive(receive_type)
+    expect(knife_oci_server_list.ui).to receive(:warn).with('This list has been truncated. To view more items, increase the limit.')
 
-    knife_bmcs_server_list.run
+    knife_oci_server_list.run
   end
 end
 
-Chef::Knife::BmcsServerList.load_deps
+Chef::Knife::OciServerList.load_deps
 
-describe Chef::Knife::BmcsServerList do
-  let(:knife_bmcs_server_list) { Chef::Knife::BmcsServerList.new }
+describe Chef::Knife::OciServerList do
+  let(:knife_oci_server_list) { Chef::Knife::OciServerList.new }
 
   describe 'run server list' do
     let(:config) do
       {
         compartment_id: 'compartmentA',
-        bmcs_config_file: DUMMY_CONFIG_FILE,
+        oci_config_file: DUMMY_CONFIG_FILE,
         format: 'summary'
       }
     end

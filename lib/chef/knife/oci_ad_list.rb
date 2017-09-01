@@ -1,20 +1,20 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
 require 'chef/knife'
-require 'chef/knife/bmcs_common_options'
-require 'chef/knife/bmcs_helper'
+require 'chef/knife/oci_common_options'
+require 'chef/knife/oci_helper'
 
 class Chef
   class Knife
     # List availability domains
-    class BmcsAdList < Knife
-      banner 'knife bmcs ad list (options)'
+    class OciAdList < Knife
+      banner 'knife oci ad list (options)'
 
-      include BmcsHelper
-      include BmcsCommonOptions
+      include OciHelper
+      include OciCommonOptions
 
       deps do
-        require 'oraclebmc'
+        require 'oci'
       end
 
       def run

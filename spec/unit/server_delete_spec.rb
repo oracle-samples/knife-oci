@@ -2,18 +2,18 @@
 
 require './spec/spec_helper'
 require 'json'
-require 'chef/knife/bmcs_server_delete'
+require 'chef/knife/oci_server_delete'
 
-Chef::Knife::BmcsServerDelete.load_deps
+Chef::Knife::OciServerDelete.load_deps
 
-describe Chef::Knife::BmcsServerDelete do
-  let(:knife_bmcs_server_delete) { Chef::Knife::BmcsServerDelete.new }
+describe Chef::Knife::OciServerDelete do
+  let(:knife_oci_server_delete) { Chef::Knife::OciServerDelete.new }
 
   describe 'run server delete' do
     let(:config) do
       {
         compartment_id: 'compartmentA',
-        bmcs_config_file: DUMMY_CONFIG_FILE,
+        oci_config_file: DUMMY_CONFIG_FILE,
         instance_id: 'ocid1.instance.oc1.test',
         yes: true
       }
@@ -66,161 +66,161 @@ describe Chef::Knife::BmcsServerDelete do
     end
 
     it 'should list missing required params' do
-      expect(knife_bmcs_server_delete.ui).to receive(:error).with('Missing the following required parameters: instance-id')
-      expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
+      expect(knife_oci_server_delete.ui).to receive(:error).with('Missing the following required parameters: instance-id')
+      expect { knife_oci_server_delete.run }.to raise_error(SystemExit)
     end
 
     it 'should fail if node-name but not purge provided' do
-      knife_bmcs_server_delete.config = config
-      knife_bmcs_server_delete.config[:chef_node_name] = 'test'
-      knife_bmcs_server_delete.config.delete(:purge)
+      knife_oci_server_delete.config = config
+      knife_oci_server_delete.config[:chef_node_name] = 'test'
+      knife_oci_server_delete.config.delete(:purge)
 
-      expect(knife_bmcs_server_delete.ui).to receive(:error).with('--node-name requires --purge argument')
-      expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
+      expect(knife_oci_server_delete.ui).to receive(:error).with('--node-name requires --purge argument')
+      expect { knife_oci_server_delete.run }.to raise_error(SystemExit)
     end
 
     it 'should delete remote instance and default named chef node' do
-      knife_bmcs_server_delete.config = config
-      knife_bmcs_server_delete.config[:purge] = true
+      knife_oci_server_delete.config = config
+      knife_oci_server_delete.config[:purge] = true
 
-      allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      allow(knife_oci_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
+      allow(knife_oci_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       allow(Chef::Node).to receive(:load).with('myname').and_return(chef_node)
       expect(chef_node).to receive(:destroy)
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Chef node name: myname')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef node 'myname'")
-      expect(knife_bmcs_server_delete.ui).not_to receive(:warn)
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Chef node name: myname')
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef node 'myname'")
+      expect(knife_oci_server_delete.ui).not_to receive(:warn)
 
-      knife_bmcs_server_delete.run
+      knife_oci_server_delete.run
     end
 
     it 'should delete remote instance and specifically named chef node' do
-      knife_bmcs_server_delete.config = config
-      knife_bmcs_server_delete.config[:purge] = true
-      knife_bmcs_server_delete.config[:chef_node_name] = 'newname'
+      knife_oci_server_delete.config = config
+      knife_oci_server_delete.config[:purge] = true
+      knife_oci_server_delete.config[:chef_node_name] = 'newname'
 
-      allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      allow(knife_oci_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
+      allow(knife_oci_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       allow(Chef::Node).to receive(:load).with('newname').and_return(chef_node_newname)
       expect(chef_node_newname).to receive(:destroy)
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Chef node name: newname')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef node 'newname'")
-      expect(knife_bmcs_server_delete.ui).not_to receive(:warn)
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Chef node name: newname')
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef node 'newname'")
+      expect(knife_oci_server_delete.ui).not_to receive(:warn)
 
-      knife_bmcs_server_delete.run
+      knife_oci_server_delete.run
     end
 
     it 'should delete remote instance' do
-      knife_bmcs_server_delete.config = config
+      knife_oci_server_delete.config = config
 
-      allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
-      expect(knife_bmcs_server_delete.ui).not_to receive(:warn)
+      allow(knife_oci_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
+      allow(knife_oci_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
+      expect(knife_oci_server_delete.ui).not_to receive(:warn)
 
-      knife_bmcs_server_delete.run
+      knife_oci_server_delete.run
     end
 
     it 'wait options should reflect wait argument' do
-      knife_bmcs_server_delete.config = config
+      knife_oci_server_delete.config = config
 
-      knife_bmcs_server_delete.config[:wait] = '-1'
-      expect(knife_bmcs_server_delete.ui).to receive(:error).with('Wait value must be 0 or greater')
-      expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
+      knife_oci_server_delete.config[:wait] = '-1'
+      expect(knife_oci_server_delete.ui).to receive(:error).with('Wait value must be 0 or greater')
+      expect { knife_oci_server_delete.run }.to raise_error(SystemExit)
 
-      expect(knife_bmcs_server_delete.get_wait_options(0)).to eq(max_interval_seconds: 3)
-      expect(knife_bmcs_server_delete.get_wait_options(1)).to eq(max_interval_seconds: 3, max_wait_seconds: 1)
+      expect(knife_oci_server_delete.get_wait_options(0)).to eq(max_interval_seconds: 3)
+      expect(knife_oci_server_delete.get_wait_options(1)).to eq(max_interval_seconds: 3, max_wait_seconds: 1)
     end
 
     it 'should fail if instance not accessible' do
-      knife_bmcs_server_delete.config = config
+      knife_oci_server_delete.config = config
 
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_raise(OracleBMC::Errors::ServiceError.new(200, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized'))
-      expect(knife_bmcs_server_delete.compute_client).to_not receive(:terminate_instance)
-      expect(knife_bmcs_server_delete.ui).to receive(:error).with('Instance not authorized or not found')
-      expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
+      allow(knife_oci_server_delete.compute_client).to receive(:get_instance).and_raise(OCI::Errors::ServiceError.new(200, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized'))
+      expect(knife_oci_server_delete.compute_client).to_not receive(:terminate_instance)
+      expect(knife_oci_server_delete.ui).to receive(:error).with('Instance not authorized or not found')
+      expect { knife_oci_server_delete.run }.to raise_error(SystemExit)
     end
 
     it 'should fail if instance already terminated' do
-      knife_bmcs_server_delete.config = config
+      knife_oci_server_delete.config = config
 
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_terminated_response)
-      expect(knife_bmcs_server_delete.compute_client).to_not receive(:terminate_instance)
-      expect(knife_bmcs_server_delete.ui).to receive(:error).with('Instance is already in terminated state')
-      expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
+      allow(knife_oci_server_delete.compute_client).to receive(:get_instance).and_return(get_server_terminated_response)
+      expect(knife_oci_server_delete.compute_client).to_not receive(:terminate_instance)
+      expect(knife_oci_server_delete.ui).to receive(:error).with('Instance is already in terminated state')
+      expect { knife_oci_server_delete.run }.to raise_error(SystemExit)
     end
 
     it 'should wait for instance to disappear' do
-      knife_bmcs_server_delete.config = config
-      knife_bmcs_server_delete.config[:wait] = '60'
+      knife_oci_server_delete.config = config
+      knife_oci_server_delete.config[:wait] = '60'
 
-      allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
-      expect(knife_bmcs_server_delete).to receive(:wait_for_instance_terminated)
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
+      allow(knife_oci_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
+      allow(knife_oci_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      expect(knife_oci_server_delete).to receive(:wait_for_instance_terminated)
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
 
-      knife_bmcs_server_delete.run
+      knife_oci_server_delete.run
     end
 
     it 'should not wait for instance to disappear if no wait' do
-      knife_bmcs_server_delete.config = config
-      knife_bmcs_server_delete.config[:wait] = nil
+      knife_oci_server_delete.config = config
+      knife_oci_server_delete.config[:wait] = nil
 
-      allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
-      expect(knife_bmcs_server_delete).to_not receive(:wait_for_instance_terminated)
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
+      allow(knife_oci_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
+      allow(knife_oci_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      expect(knife_oci_server_delete).to_not receive(:wait_for_instance_terminated)
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
 
-      knife_bmcs_server_delete.run
+      knife_oci_server_delete.run
     end
 
     it 'negative delete confirmation should exit' do
-      knife_bmcs_server_delete.config = config
-      knife_bmcs_server_delete.config.delete(:yes)
+      knife_oci_server_delete.config = config
+      knife_oci_server_delete.config.delete(:yes)
 
-      allow(knife_bmcs_server_delete.ui).to receive(:ask).and_return('n').exactly(1).times
-      expect(knife_bmcs_server_delete.compute_client).to_not receive(:terminate_instance)
-      expect(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
-      expect(knife_bmcs_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
-      expect(knife_bmcs_server_delete.ui).to receive(:error).with('Server delete canceled.')
-      expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
+      allow(knife_oci_server_delete.ui).to receive(:ask).and_return('n').exactly(1).times
+      expect(knife_oci_server_delete.compute_client).to_not receive(:terminate_instance)
+      expect(knife_oci_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_oci_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
+      expect(knife_oci_server_delete.ui).to receive(:error).with('Server delete canceled.')
+      expect { knife_oci_server_delete.run }.to raise_error(SystemExit)
     end
 
     it 'positive delete confirmation should proceed' do
-      knife_bmcs_server_delete.config = config
-      knife_bmcs_server_delete.config.delete(:yes)
+      knife_oci_server_delete.config = config
+      knife_oci_server_delete.config.delete(:yes)
 
-      allow(knife_bmcs_server_delete.ui).to receive(:ask).and_return('Y').exactly(1).times
-      allow(knife_bmcs_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
-      allow(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
-      expect(knife_bmcs_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
-      expect(knife_bmcs_server_delete.ui).not_to receive(:warn)
+      allow(knife_oci_server_delete.ui).to receive(:ask).and_return('Y').exactly(1).times
+      allow(knife_oci_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
+      allow(knife_oci_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      expect(knife_oci_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
+      expect(knife_oci_server_delete.ui).not_to receive(:warn)
 
-      knife_bmcs_server_delete.run
+      knife_oci_server_delete.run
     end
 
     it 'delete confirmation with invalid response should retry limited times' do
-      knife_bmcs_server_delete.config = config
-      knife_bmcs_server_delete.config.delete(:yes)
+      knife_oci_server_delete.config = config
+      knife_oci_server_delete.config.delete(:yes)
 
-      allow(knife_bmcs_server_delete.ui).to receive(:ask).and_return('zn').exactly(3).times
-      expect(knife_bmcs_server_delete.compute_client).to_not receive(:terminate_instance)
-      expect(knife_bmcs_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
-      expect(knife_bmcs_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
-      expect(knife_bmcs_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
-      expect(knife_bmcs_server_delete.ui).to receive(:warn).with('Valid responses are ["yes", "no", "y", "n"]').exactly(3).times
-      expect(knife_bmcs_server_delete.ui).to receive(:error).with('Server delete canceled.')
-      expect { knife_bmcs_server_delete.run }.to raise_error(SystemExit)
+      allow(knife_oci_server_delete.ui).to receive(:ask).and_return('zn').exactly(3).times
+      expect(knife_oci_server_delete.compute_client).to_not receive(:terminate_instance)
+      expect(knife_oci_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
+      expect(knife_oci_server_delete.ui).to receive(:ask).with('Delete server? (y/n)')
+      expect(knife_oci_server_delete.ui).to receive(:warn).with('Valid responses are ["yes", "no", "y", "n"]').exactly(3).times
+      expect(knife_oci_server_delete.ui).to receive(:error).with('Server delete canceled.')
+      expect { knife_oci_server_delete.run }.to raise_error(SystemExit)
     end
   end
 end

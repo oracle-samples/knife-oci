@@ -1,32 +1,32 @@
-# Chef Knife Plugin for Oracle BMCS
+# Chef Knife Plugin for Oracle Cloud Infrastructure
 [![wercker status](https://app.wercker.com/status/82cc98510b6b52b3a37d1212174a1d56/s/master "wercker status")](https://app.wercker.com/project/byKey/82cc98510b6b52b3a37d1212174a1d56)
 
 ## About
 
-The knife-bmcs plugin allows users to interact with Oracle Bare Metal Cloud Services through Chef Knife.
+The knife-oci plugin allows users to interact with Oracle Cloud Infrastructure through Chef Knife.
 
 The project is open source and maintained by Oracle Corp. The home page for the project is [here](https://docs.us-phoenix-1.oraclecloud.com/Content/API/SDKDocs/knifeplugin.htm).
 
 ## Commands
 
-- Launch a BMCS instance and bootstrap it as a Chef node:
-  `knife bmcs server create`
-- List BMCS compartments.
-  `knife bmcs compartment list`
-- Delete a BMCS instance:
-  `knife bmcs server delete`
-- List BMCS instances in a given compartment. **Note:** All instances in the compartment are returned, not only those that are Chef nodes:
-  `knife bmcs server list`
+- Launch an OCI instance and bootstrap it as a Chef node:
+  `knife oci server create`
+- List OCI compartments.
+  `knife oci compartment list`
+- Delete an OCI instance:
+  `knife oci server delete`
+- List OCI instances in a given compartment. **Note:** All instances in the compartment are returned, not only those that are Chef nodes:
+  `knife oci server list`
 - List the images in a compartment:
-  `knife bmcs image list`
+  `knife oci image list`
 - List the VCNs in a compartment:
-  `knife bmcs vcn list`
+  `knife oci vcn list`
 - List the subnets in a VCN:
-  `knife bmcs subnet list`
+  `knife oci subnet list`
 - List the shapes that may be used for a particular image type:
-  `knife bmcs shape list`
+  `knife oci shape list`
 - List the availability domains for your tenancy:
-  `knife bmcs ad list`
+  `knife oci ad list`
 
 ## Requirements
 
@@ -36,39 +36,39 @@ Linux and Mac are supported. Windows is not supported at this time.
 
 Install from RubyGems with:
 
-    chef gem install knife-bmcs
+    chef gem install knife-oci
 
 Or:
 
-    gem install knife-bmcs
+    gem install knife-oci
 
-**Note:** The plugin depends on the Oracle BMCS Ruby SDK. Information about that SDK can be found [here](https://docs.us-phoenix-1.oraclecloud.com/Content/API/SDKDocs/rubysdk.htm).
+**Note:** The plugin depends on the OCI Ruby SDK. Information about that SDK can be found [here](https://docs.us-phoenix-1.oraclecloud.com/Content/API/SDKDocs/rubysdk.htm).
 
 ## Setup
 
-A config file is required to use Bare Metal Cloud Services commands. See the instructions for creating a config file [here](https://docs.us-phoenix-1.oraclecloud.com/Content/API/Concepts/sdkconfig.htm).
+A config file is required to use Oracle Cloud Infrastructure commands. See the instructions for creating a config file [here](https://docs.us-phoenix-1.oraclecloud.com/Content/API/Concepts/sdkconfig.htm).
 
-By default, the config file will be loaded from ~/.oraclebmc/config. Alternate locations can be provided as an argument to each command using `--bmcs-config-file`, or as an entry in your knife.rb file. You can also specify a profile with `--bmcs-profile`.
+By default, the config file will be loaded from ~/.oci/config. Alternate locations can be provided as an argument to each command using `--oci-config-file`, or as an entry in your knife.rb file. You can also specify a profile with `--oci-profile`.
 
 ## Setting the Compartment
 
-Most BMCS commands require a compartment ID, which will default to the root compartment. If you do not have the correct permissions and you do not specify a different compartment, then you will receive an authorization error.
+Most OCI commands require a compartment ID, which will default to the root compartment. If you do not have the correct permissions and you do not specify a different compartment, then you will receive an authorization error.
 
-A compartment ID can be provided with each BMCS command using `--compartment-id`, or it can be provided in your knife.rb. If a compartment ID is set in both places, then the ID specified in the command will take precedence.
+A compartment ID can be provided with each OCI command using `--compartment-id`, or it can be provided in your knife.rb. If a compartment ID is set in both places, then the ID specified in the command will take precedence.
 
 ## Knife.rb values
 
-The following example shows the available knife.rb settings for the BMCS Knife Plugin. All of these are optional.
+The following example shows the available knife.rb settings for the OCI Knife Plugin. All of these are optional.
 
-    knife[:bmcs_config_file] = '~/.oraclebmc/my_alternate_config'
-    knife[:bmcs_profile] = 'MY_ALTERNATE_PROFILE'
+    knife[:oci_config_file] = '~/.oci/my_alternate_config'
+    knife[:oci_profile] = 'MY_ALTERNATE_PROFILE'
     knife[:compartment_id] = 'ocid1.compartment.oc1..aaaaaaaalsyenka3grgpvvmqwjshig5abzx3jnbvixxxzx373ehwdj7o5arc'
 
 ## Using the Server Create Command
 
 The following example shows how to launch and bootstrap an Oracle Linux image:
 
-    knife bmcs server create
+    knife oci server create
       --availability-domain 'kIdk:PHX-AD-1'
       --compartment-id 'ocidv1:tenancy:oc1:phx:1460406592660:aaaaaaaab4faofrfkxecohhjuivjq26a13'
       --image-id 'ocid1.image.oc1.phx.aaaaaaaaqutj4qjxihpl4mboabsa27mrpusygv6gurp47katabcvljmq3puq'
@@ -80,9 +80,9 @@ The following example shows how to launch and bootstrap an Oracle Linux image:
       --run-list 'recipe[my_cookbook::my_recipe]'
       --region us-phoenix-1
 
-When using the `knife bmcs server create` command, you must specify a public key using `--ssh-authorized-keys-file` and the corresponding private key using `--identity-file`. For more information, see [Managing Key Pairs on Linux Instances](https://docs.us-phoenix-1.oraclecloud.com/Content/Compute/Tasks/managingkeypairs.htm).
+When using the `knife oci server create` command, you must specify a public key using `--ssh-authorized-keys-file` and the corresponding private key using `--identity-file`. For more information, see [Managing Key Pairs on Linux Instances](https://docs.us-phoenix-1.oraclecloud.com/Content/Compute/Tasks/managingkeypairs.htm).
 
-Notes about the `knife bmcs server create` command:
+Notes about the `knife oci server create` command:
 
  - All Oracle-provided Linux images are supported. Windows images are not supported at this time.
  - Bootstrapping is done through SSH only, and uses the public IP address.
@@ -98,9 +98,9 @@ See [CHANGELOG](/CHANGELOG.md).
 
 ## Contributing
 
-knife-bmcs is an open source project. See [CONTRIBUTING](/CONTRIBUTING.md) for details.
+knife-oci is an open source project. See [CONTRIBUTING](/CONTRIBUTING.md) for details.
 
-Oracle gratefully acknowledges the contributions to knife-bmcs that have been made by the community.
+Oracle gratefully acknowledges the contributions to knife-oci that have been made by the community.
 
 ## Known Issues
 

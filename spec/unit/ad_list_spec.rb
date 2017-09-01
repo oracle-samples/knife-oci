@@ -2,55 +2,55 @@
 
 require './spec/spec_helper'
 require 'json'
-require 'chef/knife/bmcs_ad_list'
+require 'chef/knife/oci_ad_list'
 
 def run_tests(output_format)
   receive_type = output_format == 'summary' ? :list : :output
 
   it "shows #{output_format} view" do
-    knife_bmcs_ad_list.config = config
-    knife_bmcs_ad_list.config[:format] = output_format
+    knife_oci_compartment_list.config = config
+    knife_oci_compartment_list.config[:format] = output_format
 
-    allow(knife_bmcs_ad_list.identity_client).to receive(:list_availability_domains).and_return(response)
-    expect(knife_bmcs_ad_list.ui).to receive(receive_type)
-    expect(knife_bmcs_ad_list.ui).not_to receive(:warn)
+    allow(knife_oci_compartment_list.identity_client).to receive(:list_availability_domains).and_return(response)
+    expect(knife_oci_compartment_list.ui).to receive(receive_type)
+    expect(knife_oci_compartment_list.ui).not_to receive(:warn)
 
-    knife_bmcs_ad_list.run
+    knife_oci_compartment_list.run
   end
 
   it "shows #{output_format} with empty list" do
-    knife_bmcs_ad_list.config = config
-    knife_bmcs_ad_list.config[:format] = output_format
+    knife_oci_compartment_list.config = config
+    knife_oci_compartment_list.config[:format] = output_format
 
-    allow(knife_bmcs_ad_list.identity_client).to receive(:list_availability_domains).and_return(empty_response)
-    expect(knife_bmcs_ad_list.ui).to receive(receive_type)
-    expect(knife_bmcs_ad_list.ui).not_to receive(:warn)
+    allow(knife_oci_compartment_list.identity_client).to receive(:list_availability_domains).and_return(empty_response)
+    expect(knife_oci_compartment_list.ui).to receive(receive_type)
+    expect(knife_oci_compartment_list.ui).not_to receive(:warn)
 
-    knife_bmcs_ad_list.run
+    knife_oci_compartment_list.run
   end
 
   it "shows #{output_format} with nil list" do
-    knife_bmcs_ad_list.config = config
-    knife_bmcs_ad_list.config[:format] = output_format
+    knife_oci_compartment_list.config = config
+    knife_oci_compartment_list.config[:format] = output_format
 
-    allow(knife_bmcs_ad_list.identity_client).to receive(:list_availability_domains).and_return(nil_response)
-    expect(knife_bmcs_ad_list.ui).to receive(receive_type)
-    expect(knife_bmcs_ad_list.ui).not_to receive(:warn)
+    allow(knife_oci_compartment_list.identity_client).to receive(:list_availability_domains).and_return(nil_response)
+    expect(knife_oci_compartment_list.ui).to receive(receive_type)
+    expect(knife_oci_compartment_list.ui).not_to receive(:warn)
 
-    knife_bmcs_ad_list.run
+    knife_oci_compartment_list.run
   end
 end
 
-Chef::Knife::BmcsAdList.load_deps
+Chef::Knife::OciAdList.load_deps
 
-describe Chef::Knife::BmcsAdList do
-  let(:knife_bmcs_ad_list) { Chef::Knife::BmcsAdList.new }
+describe Chef::Knife::OciAdList do
+  let(:knife_oci_compartment_list) { Chef::Knife::OciAdList.new }
 
   describe 'run ad list' do
     let(:config) do
       {
         compartment_id: 'compartmentA',
-        bmcs_config_file: DUMMY_CONFIG_FILE,
+        oci_config_file: DUMMY_CONFIG_FILE,
         format: 'summary'
       }
     end
