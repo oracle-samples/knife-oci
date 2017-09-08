@@ -7,6 +7,8 @@ The knife-bmcs plugin allows users to interact with Oracle Bare Metal Cloud Serv
 
 The project is open source and maintained by Oracle Corp. The home page for the project is [here](https://docs.us-phoenix-1.oraclecloud.com/Content/API/SDKDocs/knifeplugin.htm).
 
+**_Breaking Change Notice:_** Information about the upcoming rename for this plugin can be found [here](docs/rename.md).
+
 ## Commands
 
 - Launch a BMCS instance and bootstrap it as a Chef node:
