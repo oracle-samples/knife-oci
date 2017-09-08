@@ -97,7 +97,7 @@ class Chef
         rescue OCI::Waiter::Errors::MaximumWaitTimeExceededError
           error_and_exit 'Timeout exceeded while waiting for instance to terminate'
         rescue OCI::Errors::ServiceError => service_error
-          raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+          raise unless service_error.service_code == 'NotAuthorizedOrNotFound'
           # we'll soak this exception since the terminate may have completed before we started waiting for it.
           ui.warn 'Instance not authorized or not found'
         end

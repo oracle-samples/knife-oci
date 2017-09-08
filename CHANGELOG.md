@@ -7,6 +7,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 - Changed the gem name from knife-bmcs to knife-oci, and changed all occurances of BMCS to OCI.
 
+### Fixed
+- List commands will now make multiple service calls to ensure that all results are retrieved, up to the given limit.
+
+### Added
+- '--purge' param for 'knife oci server delete' to optionally remove the node from the Chef Server.
+- Additional info in 'knife oci server show'
+
+## 1.2.0 - 2017-09-11
+### Deprecated
+- The knife-bmcs gem has been deprecated. Users should switch to knife-oci, which provides a similar set of commands under 'knife oci'. knife-oci is a runtime dependency of knife-bmcs, so will automatically be availabe when upgrading.
+
 ## 1.1.0 - 2017-08-16
 ### Added
 - List compartments command, 'knife bmcs compartment list'
