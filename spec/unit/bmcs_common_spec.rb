@@ -8,7 +8,7 @@ describe 'oci common utilities' do
     let(:knife_oci_server_list) { Chef::Knife::OciServerList.new }
     it 'loads oci config from knife config' do
       knife_oci_server_list.config = { oci_config_file: DUMMY_CONFIG_FILE }
-      expect(knife_oci_server_list.oci_config.tenancy).to eq('tenancy_for_default_profile')
+      expect(knife_oci_server_list.oci_config.tenancy).to eq('ocidv1:tenancy:oc1:phx:1460406592660:aaaaaaaab4faofrfkxecohhj0123456789')
     end
 
     it 'loads oci profile from knife config' do
@@ -16,7 +16,7 @@ describe 'oci common utilities' do
         oci_config_file: DUMMY_CONFIG_FILE,
         oci_profile: 'SECOND_PROFILE'
       }
-      expect(knife_oci_server_list.oci_config.tenancy).to eq('tenancy_for_second_profile')
+      expect(knife_oci_server_list.oci_config.tenancy).to eq('ocidv1:tenancy:oc1:phx:1460406592660:aaaaaaaab4faofrfkxecohhj9876543210')
     end
   end
 

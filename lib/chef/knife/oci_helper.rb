@@ -168,7 +168,7 @@ class Chef
         response = compute_client.get_instance(instance_id)
         error_and_exit 'Instance is already in terminated state' if response && response.data && response.data.lifecycle_state == OCI::Core::Models::Instance::LIFECYCLE_STATE_TERMINATED
       rescue OCI::Errors::ServiceError => service_error
-        raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+        raise unless service_error.service_code == 'NotAuthorizedOrNotFound'
         error_and_exit 'Instance not authorized or not found'
       else
         return response
