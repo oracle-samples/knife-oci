@@ -15,4 +15,3 @@ Or:
 
     gem install knife-oci
 
-Installing the latest (final) version of knife-bmcs will also install knife-oci, such that both 'knife oci' and 'knife bmcs' commands will be available.
