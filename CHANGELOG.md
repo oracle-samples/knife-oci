@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## 1.2.0 - 2017-09-11
 ### Deprecated
-- The knife-bmcs gem has been deprecated. Users should switch to knife-oci, which provides a similar set of commands under 'knife oci'. knife-oci is a runtime dependency of knife-bmcs, so will automatically be availabe when upgrading.
+- The knife-bmcs gem has been deprecated. Users should switch to knife-oci, which provides a similar set of commands under 'knife oci'. Details can be found [here](docs/rename.md).
 
 ## 1.1.0 - 2017-08-16
 ### Added
