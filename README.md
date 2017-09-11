@@ -3,11 +3,11 @@
 
 ## About
 
-The knife-oci plugin allows users to interact with Oracle Cloud Infrastructure through Chef Knife.
+The knife-oci plugin allows users to interact with Oracle Cloud Infrastructure through [Chef Knife](https://docs.chef.io/knife.html).
 
 The project is open source and maintained by Oracle Corp. The home page for the project is [here](https://docs.us-phoenix-1.oraclecloud.com/Content/API/SDKDocs/knifeplugin.htm).
 
-**_Breaking Change Notice:_** Information about the upcoming rename for this plugin can be found [here](docs/rename.md).
+**_Breaking Change Notice:_** Information about the recent rename from knife-bmcs to knife-oci can be found [here](docs/rename.md).
 
 ## Commands
 
