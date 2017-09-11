@@ -30,10 +30,6 @@ The project is open source and maintained by Oracle Corp. The home page for the 
 - List the availability domains for your tenancy:
   `knife oci ad list`
 
-## Requirements
-
-Linux and Mac are supported. Windows is not supported at this time.
-
 ## Installation
 
 Install from RubyGems with:

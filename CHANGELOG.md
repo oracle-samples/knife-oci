@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - List commands will now make multiple service calls to ensure that all results are retrieved, up to the given limit.
 
 ### Added
+- Support for running the knife-oci plugin on Windows.
 - '--purge' param for 'knife oci server delete' to optionally remove the node from the Chef Server.
 - Additional info in 'knife oci server show'
 
