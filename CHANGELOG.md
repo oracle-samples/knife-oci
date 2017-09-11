@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## 2.0.0 - 2017-09-11
 ### Changed
-- Changed the gem name from knife-bmcs to knife-oci, and changed all occurances of BMCS to OCI.
+- Changed the gem name from knife-bmcs to knife-oci, and changed all occurances of BMCS to OCI. Details can be found [here](docs/rename.md).
 
 ### Fixed
 - List commands will now make multiple service calls to ensure that all results are retrieved, up to the given limit.

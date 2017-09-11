@@ -2,7 +2,7 @@
 
 ## About
 
-The knife-bmcs plugin for Chef Knife has been deprecated. Please use knife-oci instead. See [the main README](/README.md) for details.
+The knife-bmcs plugin for Chef Knife has been deprecated. Please use knife-oci instead. Details about the change can be found [here](docs/rename.md), and the main README is [here](/README.md).
 
 ## Commands
 
