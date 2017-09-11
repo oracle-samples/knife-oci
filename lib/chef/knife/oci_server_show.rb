@@ -1,8 +1,8 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
 require 'chef/knife'
-require 'chef/knife/bmcs_common_options'
-require 'chef/knife/bmcs_helper'
+require 'chef/knife/oci_common_options'
+require 'chef/knife/oci_helper'
 
 # Methods to extend the instance model
 module ServerDetails
@@ -22,16 +22,16 @@ end
 
 class Chef
   class Knife
-    # List BMCS instances. Note that this lists all instances in a
+    # List OCI instances. Note that this lists all instances in a
     # compartment, not just those that are set up as Chef nodes.
-    class BmcsServerShow < Knife
-      banner 'knife bmcs server show (options)'
+    class OciServerShow < Knife
+      banner 'knife oci server show (options)'
 
-      include BmcsHelper
-      include BmcsCommonOptions
+      include OciHelper
+      include OciCommonOptions
 
       deps do
-        require 'oraclebmc'
+        require 'oci'
       end
 
       option :instance_id,
@@ -40,24 +40,24 @@ class Chef
 
       def lookup_compartment_name(compartment_id)
         compartment = identity_client.get_compartment(compartment_id, {})
-      rescue OracleBMC::Errors::ServiceError => service_error
-        raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+      rescue OCI::Errors::ServiceError => service_error
+        raise unless service_error.service_code == 'NotAuthorizedOrNotFound'
       else
         compartment.data.name
       end
 
       def lookup_image_name(image_id)
         image = compute_client.get_image(image_id, {})
-      rescue OracleBMC::Errors::ServiceError => service_error
-        raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+      rescue OCI::Errors::ServiceError => service_error
+        raise unless service_error.service_code == 'NotAuthorizedOrNotFound'
       else
         image.data.display_name
       end
 
       def lookup_vcn_name(vcn_id)
         vcn = network_client.get_vcn(vcn_id, {})
-      rescue OracleBMC::Errors::ServiceError => service_error
-        raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+      rescue OCI::Errors::ServiceError => service_error
+        raise unless service_error.service_code == 'NotAuthorizedOrNotFound'
       else
         vcn.data.display_name
       end
@@ -77,8 +77,8 @@ class Chef
 
         begin
           subnet = network_client.get_subnet(vnic.subnet_id, {})
-        rescue OracleBMC::Errors::ServiceError => service_error
-          raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+        rescue OCI::Errors::ServiceError => service_error
+          raise unless service_error.service_code == 'NotAuthorizedOrNotFound'
         else
           vnic.fqdn = vnic.hostname_label + '.' + subnet.data.subnet_domain_name if
             subnet.data && subnet.data.subnet_domain_name && vnic.hostname_label
@@ -99,8 +99,8 @@ class Chef
           next unless vnic.lifecycle_state == 'ATTACHED'
           begin
             vnic_info = network_client.get_vnic(vnic.vnic_id, {})
-          rescue OracleBMC::Errors::ServiceError => service_error
-            raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+          rescue OCI::Errors::ServiceError => service_error
+            raise unless service_error.service_code == 'NotAuthorizedOrNotFound'
           else
             add_vnic_details(vnic_info.data)
             # for now, only display information for primary vnic

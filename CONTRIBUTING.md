@@ -1,4 +1,4 @@
-# Contributing to the Chef Knife Plugin for Oracle BMCS
+# Contributing to the Chef Knife Plugin for Oracle Cloud Infrastructure
 
 *Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.*
 

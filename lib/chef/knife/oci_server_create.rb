@@ -1,38 +1,38 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
 require 'chef/knife'
-require 'chef/knife/bmcs_helper'
-require 'chef/knife/bmcs_common_options'
-
-# Port for SSH - might want to parameterize this in the future.
-SSH_PORT = 22
-
-WAIT_FOR_SSH_INTERVAL_SECONDS = 2
-DEFAULT_WAIT_FOR_SSH_MAX_SECONDS = 180
-DEFAULT_WAIT_TO_STABILIZE_SECONDS = 40
+require 'chef/knife/oci_helper'
+require 'chef/knife/oci_common_options'
 
 class Chef
   class Knife
     # Server Create Command: Launch an instance and bootstrap it.
-    class BmcsServerCreate < Knife
-      banner 'knife bmcs server create (options)'
+    class OciServerCreate < Knife
+      banner 'knife oci server create (options)'
 
-      include BmcsHelper
-      include BmcsCommonOptions
+      include OciHelper
+      include OciCommonOptions
+
+      # Port for SSH - might want to parameterize this in the future.
+      SSH_PORT = 22
+
+      WAIT_FOR_SSH_INTERVAL_SECONDS = 2
+      DEFAULT_WAIT_FOR_SSH_MAX_SECONDS = 180
+      DEFAULT_WAIT_TO_STABILIZE_SECONDS = 40
 
       deps do
-        require 'oraclebmc'
+        require 'oci'
         require 'chef/knife/bootstrap'
         Chef::Knife::Bootstrap.load_deps
       end
 
-      option :bmcs_config_file,
-             long: '--bmcs-config-file FILE',
-             description: 'The path to the Oracle BMCS config file. Default: ~/.oraclebmc/config'
+      option :oci_config_file,
+             long: '--oci-config-file FILE',
+             description: 'The path to the OCI config file. Default: ~/.oci/config'
 
-      option :bmcs_profile,
-             long: '--bmcs-profile PROFILE',
-             description: 'The profile to load from the Oracle BMCS config file. Default: DEFAULT'
+      option :oci_profile,
+             long: '--oci-profile PROFILE',
+             description: 'The profile to load from the OCI config file. Default: DEFAULT'
 
       option :availability_domain,
              long: '--availability-domain AD',
@@ -121,7 +121,7 @@ class Chef
         metadata = merge_metadata
         error_and_exit 'SSH authorized keys must be specified.' unless metadata['ssh_authorized_keys']
 
-        request = OracleBMC::Core::Models::LaunchInstanceDetails.new
+        request = OCI::Core::Models::LaunchInstanceDetails.new
         request.availability_domain = config[:availability_domain]
         request.compartment_id = compartment_id
         request.display_name = config[:display_name]
@@ -248,10 +248,10 @@ class Chef
 
         begin
           response = compute_client.get_instance(instance_id).wait_until(:lifecycle_state,
-                                                                         OracleBMC::Core::Models::Instance::LIFECYCLE_STATE_RUNNING,
+                                                                         OCI::Core::Models::Instance::LIFECYCLE_STATE_RUNNING,
                                                                          max_interval_seconds: 3) do |poll_response|
-            if poll_response.data.lifecycle_state == OracleBMC::Core::Models::Instance::LIFECYCLE_STATE_TERMINATED ||
-               poll_response.data.lifecycle_state == OracleBMC::Core::Models::Instance::LIFECYCLE_STATE_TERMINATING
+            if poll_response.data.lifecycle_state == OCI::Core::Models::Instance::LIFECYCLE_STATE_TERMINATED ||
+               poll_response.data.lifecycle_state == OCI::Core::Models::Instance::LIFECYCLE_STATE_TERMINATING
               throw :stop_succeed
             end
 
@@ -261,7 +261,7 @@ class Chef
           end_progress_indicator
         end
 
-        if response.data.lifecycle_state != OracleBMC::Core::Models::Instance::LIFECYCLE_STATE_RUNNING
+        if response.data.lifecycle_state != OCI::Core::Models::Instance::LIFECYCLE_STATE_RUNNING
           error_and_exit 'Instance failed to provision.'
         end
 

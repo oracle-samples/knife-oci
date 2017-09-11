@@ -28,52 +28,52 @@ DUMMY_CONFIG_FILE = 'spec/resources/config_for_unit_tests'.freeze
 
 def compartment_id
   # Example value: ocid1.compartment.oc1..aaaaaaaa7x9zzwkqlcyupl6msnblrhffavz6bu6phk7q265kfsil3ileabcq
-  ENV['KNIFE_BMCS_COMPARTMENT']
+  ENV['KNIFE_OCI_COMPARTMENT']
 end
 
 def availability_domain
   # Example value: IxGV:US-ASHBURN-AD-2
-  ENV['KNIFE_BMCS_AD']
+  ENV['KNIFE_OCI_AD']
 end
 
 def config_file_path
-  # Example value: ~/.oraclebmc/config
-  ENV['KNIFE_BMCS_CONFIG_FILE']
+  # Example value: ~/.oci/config
+  ENV['KNIFE_OCI_CONFIG_FILE']
 end
 
 def profile
   # Example value: DEFAULT
-  ENV['KNIFE_BMCS_PROFILE']
+  ENV['KNIFE_OCI_PROFILE']
 end
 
 def subnet_id
   # Example value: ocid1.subnet.oc1.iad.aaaaaaaacuqa4rii7bwqyanrarfmqgsz6qptljsvqijcpcspfaty4lab8nza
-  ENV['KNIFE_BMCS_SUBNET']
+  ENV['KNIFE_OCI_SUBNET']
 end
 
 def shape
   # Example value: VM.Standard1.1
-  ENV['KNIFE_BMCS_SHAPE']
+  ENV['KNIFE_OCI_SHAPE']
 end
 
 def oracle_linux_image_id
   # Example value: ocid1.image.oc1.iad.aaaaaaaah2d5y4jlyi6q5mus4ihabunzdzuiwmuc3pequv27jfkc5eb4ylcq
-  ENV['KNIFE_BMCS_ORACLE_LINUX_ID']
+  ENV['KNIFE_OCI_ORACLE_LINUX_ID']
 end
 
 def ubuntu_image_id
   # Example value: ocid1.image.oc1.iad.aaaaaaaa25xqs7rqfkf7ukgwnpzvyhbg3qd4rplu7yl5tpnmdkzzeudr3s2a
-  ENV['KNIFE_BMCS_UBUNTU_ID']
+  ENV['KNIFE_OCI_UBUNTU_ID']
 end
 
 def public_ssh_key_file
   # Example value: ~/.keys/instance_keys.pub
-  ENV['KNIFE_BMCS_PUBLIC_SSH_KEY_FILE']
+  ENV['KNIFE_OCI_PUBLIC_SSH_KEY_FILE']
 end
 
 def private_key_file
   # Example value: ~/.keys/instance_keys
-  ENV['KNIFE_BMCS_PRIVATE_KEY_FILE']
+  ENV['KNIFE_OCI_PRIVATE_KEY_FILE']
 end
 
 RSpec.configure do |rspec|
@@ -89,7 +89,7 @@ RSpec.configure do |rspec|
 end
 
 def write_command_to_file(subcommand, file, directory)
-  command = "knife bmcs #{subcommand}"
+  command = "knife oci #{subcommand}"
   shell = Mixlib::ShellOut.new(command)
   shell.run_command
 

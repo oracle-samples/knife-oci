@@ -1,6 +1,6 @@
 ## Notes on the OCI Rename
 
-The name Bare Metal Cloud Services (BMCS) has changed to Oracle Cloud Infrastructure (OCI), and this plugin will update all occurrences of the old name accordingly. Existing versions of knife-bmcs will not be affected, but no new versions of knife-bmcs will be released, so users are encouraged to move to the new knife-oci plugin to take advantage of new features and bug fixes going forward. The new plugin will be available starting 9/11/2017, and using the new plugin will require the following changes for existing users of knife-bmcs:
+The name Bare Metal Cloud Services (BMCS) has changed to Oracle Cloud Infrastructure (OCI), and this plugin has updated all occurrences of the old name accordingly. Existing versions of knife-bmcs will not be affected, but no new versions of knife-bmcs will be released, so users are encouraged to move to the new knife-oci plugin to take advantage of new features and bug fixes going forward. The new plugin will require the following changes for existing users of knife-bmcs:
 
 * All commands will be under 'knife oci' instead of 'knife bmcs'.
 * The parameters '--bmcs-config-file' and '--bmcs-profile' will change to '--oci-config-file' and '--oci-profile'.
@@ -15,3 +15,4 @@ Or:
 
     gem install knife-oci
 
+Existing users of knife-bmcs may still view the documentation for that version at [README_BMCS.md](/README_BMCS.md).

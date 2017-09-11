@@ -6,8 +6,8 @@ require 'rspec/core/rake_task'
 RuboCop::RakeTask.new
 
 task :install do
-  sh %(chef gem build knife-bmcs.gemspec)
-  sh %(chef gem install knife-bmcs-*.gem)
+  sh %(chef gem build knife-oci.gemspec)
+  sh %(chef gem install knife-oci-*.gem)
 end
 
 desc 'Run all unit tests.'

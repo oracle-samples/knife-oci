@@ -1,23 +1,23 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
 require 'chef/knife'
-require 'chef/knife/bmcs_helper'
-require 'chef/knife/bmcs_common_options'
-
-# max interval for polling the server state
-MAX_INTERVAL_SECONDS = 3
+require 'chef/knife/oci_helper'
+require 'chef/knife/oci_common_options'
 
 class Chef
   class Knife
-    # Server Delete Command: Delete a BMCS instance.
-    class BmcsServerDelete < Knife
-      banner 'knife bmcs server delete (options)'
+    # Server Delete Command: Delete an OCI instance.
+    class OciServerDelete < Knife
+      banner 'knife oci server delete (options)'
 
-      include BmcsHelper
-      include BmcsCommonOptions
+      include OciHelper
+      include OciCommonOptions
+
+      # max interval for polling the server state
+      MAX_INTERVAL_SECONDS = 3
 
       deps do
-        require 'oraclebmc'
+        require 'oci'
         require 'chef/knife/bootstrap'
       end
 
@@ -87,17 +87,17 @@ class Chef
         begin
           begin
             compute_client.get_instance(instance_id).wait_until(:lifecycle_state,
-                                                                OracleBMC::Core::Models::Instance::LIFECYCLE_STATE_TERMINATED,
+                                                                OCI::Core::Models::Instance::LIFECYCLE_STATE_TERMINATED,
                                                                 get_wait_options(wait_for)) do
               show_progress
             end
           ensure
             end_progress_indicator
           end
-        rescue OracleBMC::Waiter::Errors::MaximumWaitTimeExceededError
+        rescue OCI::Waiter::Errors::MaximumWaitTimeExceededError
           error_and_exit 'Timeout exceeded while waiting for instance to terminate'
-        rescue OracleBMC::Errors::ServiceError => service_error
-          raise unless service_error.serviceCode == 'NotAuthorizedOrNotFound'
+        rescue OCI::Errors::ServiceError => service_error
+          raise unless service_error.service_code == 'NotAuthorizedOrNotFound'
           # we'll soak this exception since the terminate may have completed before we started waiting for it.
           ui.warn 'Instance not authorized or not found'
         end

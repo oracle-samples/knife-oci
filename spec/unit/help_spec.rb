@@ -11,8 +11,8 @@ def write_help(subcommand, file)
 end
 
 describe 'show help for each command' do
-  it 'bmcs displays a help message' do
-    write_help('', 'bmcs')
+  it 'oci displays a help message' do
+    write_help('', 'oci')
   end
 
   it 'server create displays a help message' do

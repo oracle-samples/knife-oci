@@ -2,70 +2,70 @@
 
 require './spec/spec_helper'
 require 'json'
-require 'chef/knife/bmcs_vcn_list'
+require 'chef/knife/oci_vcn_list'
 
 # rubocop:disable Metrics/AbcSize
 def run_tests(output_format)
   receive_type = output_format == 'summary' ? :list : :output
 
   it "shows #{output_format} view" do
-    knife_bmcs_vcn_list.config = config
-    knife_bmcs_vcn_list.config[:format] = output_format
+    knife_oci_vcn_list.config = config
+    knife_oci_vcn_list.config[:format] = output_format
 
-    allow(knife_bmcs_vcn_list.network_client).to receive(:list_vcns).and_return(multi_response)
-    expect(knife_bmcs_vcn_list.ui).to receive(receive_type)
-    expect(knife_bmcs_vcn_list.ui).not_to receive(:warn)
+    allow(knife_oci_vcn_list.network_client).to receive(:list_vcns).and_return(multi_response)
+    expect(knife_oci_vcn_list.ui).to receive(receive_type)
+    expect(knife_oci_vcn_list.ui).not_to receive(:warn)
 
-    knife_bmcs_vcn_list.run
+    knife_oci_vcn_list.run
   end
 
   it "shows #{output_format} with nil list" do
-    knife_bmcs_vcn_list.config = config
-    knife_bmcs_vcn_list.config[:format] = output_format
+    knife_oci_vcn_list.config = config
+    knife_oci_vcn_list.config[:format] = output_format
 
-    allow(knife_bmcs_vcn_list.network_client).to receive(:list_vcns).and_return(nil_response)
-    expect(knife_bmcs_vcn_list.ui).to receive(receive_type)
-    expect(knife_bmcs_vcn_list.ui).not_to receive(:warn)
+    allow(knife_oci_vcn_list.network_client).to receive(:list_vcns).and_return(nil_response)
+    expect(knife_oci_vcn_list.ui).to receive(receive_type)
+    expect(knife_oci_vcn_list.ui).not_to receive(:warn)
 
-    knife_bmcs_vcn_list.run
+    knife_oci_vcn_list.run
   end
 
   it "shows #{output_format} with empty list" do
-    knife_bmcs_vcn_list.config = config
-    knife_bmcs_vcn_list.config[:format] = output_format
+    knife_oci_vcn_list.config = config
+    knife_oci_vcn_list.config[:format] = output_format
 
-    allow(knife_bmcs_vcn_list.network_client).to receive(:list_vcns).and_return(empty_response)
-    expect(knife_bmcs_vcn_list.ui).to receive(receive_type)
-    expect(knife_bmcs_vcn_list.ui).not_to receive(:warn)
+    allow(knife_oci_vcn_list.network_client).to receive(:list_vcns).and_return(empty_response)
+    expect(knife_oci_vcn_list.ui).to receive(receive_type)
+    expect(knife_oci_vcn_list.ui).not_to receive(:warn)
 
-    knife_bmcs_vcn_list.run
+    knife_oci_vcn_list.run
   end
 
   it "warns #{output_format} when truncated" do
-    knife_bmcs_vcn_list.config = config
-    knife_bmcs_vcn_list.config[:format] = output_format
-    knife_bmcs_vcn_list.config[:limit] = 1
+    knife_oci_vcn_list.config = config
+    knife_oci_vcn_list.config[:format] = output_format
+    knife_oci_vcn_list.config[:limit] = 1
     response = multi_response
     response.headers['opc-next-page'] = 'page2'
 
-    allow(knife_bmcs_vcn_list.network_client).to receive(:list_vcns).and_return(response, empty_response)
-    expect(knife_bmcs_vcn_list.ui).to receive(receive_type)
-    expect(knife_bmcs_vcn_list.ui).to receive(:warn).with('This list has been truncated. To view more items, increase the limit.')
+    allow(knife_oci_vcn_list.network_client).to receive(:list_vcns).and_return(response, empty_response)
+    expect(knife_oci_vcn_list.ui).to receive(receive_type)
+    expect(knife_oci_vcn_list.ui).to receive(:warn).with('This list has been truncated. To view more items, increase the limit.')
 
-    knife_bmcs_vcn_list.run
+    knife_oci_vcn_list.run
   end
 end
 
-Chef::Knife::BmcsVcnList.load_deps
+Chef::Knife::OciVcnList.load_deps
 
-describe Chef::Knife::BmcsVcnList do
-  let(:knife_bmcs_vcn_list) { Chef::Knife::BmcsVcnList.new }
+describe Chef::Knife::OciVcnList do
+  let(:knife_oci_vcn_list) { Chef::Knife::OciVcnList.new }
 
   describe 'list vcn' do
     let(:config) do
       {
         compartment_id: 'compartmentA',
-        bmcs_config_file: DUMMY_CONFIG_FILE
+        oci_config_file: DUMMY_CONFIG_FILE
       }
     end
 

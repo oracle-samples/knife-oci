@@ -1,18 +1,18 @@
 # Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
 
 require './spec/spec_helper'
-require 'oraclebmc'
+require 'oci'
 
 SERVER_CREATE_OUTPUT_DIRECTORY = 'test_output/server_create/'.freeze
 
 def should_mock_response
-  ENV['MOCK_BMCS'] && ENV['MOCK_BMCS'] != 'false'
+  ENV['MOCK_OCI'] && ENV['MOCK_OCI'] != 'false'
 end
 
 def run_server_create(param_hash, file)
   puts "Running integ test #{file}..."
   if should_mock_response
-    puts '++++++ Response is being mocked. To stop mocking, unset MOCK_BMCS. ++++++'
+    puts '++++++ Response is being mocked. To stop mocking, unset MOCK_OCI. ++++++'
     shell = double(stdout: File.open(SERVER_CREATE_OUTPUT_DIRECTORY + file + '.txt', 'rb').read)
   else
     params = param_hash.map { |k, v| "#{k} #{v}" }.join(' ')
@@ -26,7 +26,7 @@ end
 def run_server_delete(param_hash, file)
   puts "Running integ test #{file}..."
   if should_mock_response
-    puts '++++++ Response is being mocked. To stop mocking, unset MOCK_BMCS. ++++++'
+    puts '++++++ Response is being mocked. To stop mocking, unset MOCK_OCI. ++++++'
     shell = double(stdout: File.open(SERVER_CREATE_OUTPUT_DIRECTORY + file + '.txt', 'rb').read)
   else
     params = param_hash.map { |k, v| "#{k} #{v}" }.join(' ')
@@ -70,8 +70,8 @@ describe 'server create command' do
       '--subnet-id' => subnet_id,
       '--shape' => shape,
       '--image-id' => 'Must be set for each run.',
-      '--bmcs-config-file' => config_file_path,
-      '--bmcs-profile' => profile,
+      '--oci-config-file' => config_file_path,
+      '--oci-profile' => profile,
       '--ssh-authorized-keys-file' => public_ssh_key_file,
       '--identity-file' => private_key_file,
       '--ssh-user' => 'opc',
@@ -91,8 +91,8 @@ describe 'server create command' do
   let(:min_delete_params) do
     {
       '--compartment-id' => compartment_id,
-      '--bmcs-config-file' => config_file_path,
-      '--bmcs-profile' => profile,
+      '--oci-config-file' => config_file_path,
+      '--oci-profile' => profile,
       '--yes' => true
     }
   end

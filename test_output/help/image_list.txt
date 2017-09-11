@@ -1,8 +1,6 @@
-knife bmcs image list --help
+knife oci image list --help
 
-knife bmcs image list (options)
-        --bmcs-config-file FILE      The path to the Oracle BMCS config file. Default: ~/.oraclebmc/config
-        --bmcs-profile PROFILE       The profile to load from the Oracle BMCS config file. Default: DEFAULT
+knife oci image list (options)
     -s, --server-url URL             Chef Server URL
         --chef-zero-host HOST        Host to start chef-zero on
         --chef-zero-port PORT        Port (or port range) to start chef-zero on.  Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works.
@@ -21,6 +19,8 @@ knife bmcs image list (options)
         --[no-]listen                Whether a local mode (-z) server binds to a port
     -z, --local-mode                 Point knife commands at local repository instead of server
     -u, --user USER                  API Client Username
+        --oci-config-file FILE       The path to the OCI config file. Default: ~/.oci/config
+        --oci-profile PROFILE        The profile to load from the OCI config file. Default: DEFAULT
         --print-after                Show the data after a destructive operation
         --region REGION              The region to make calls against.  (e.g., `us-ashburn-1`)
     -V, --verbose                    More verbose output. Use twice for max verbosity
