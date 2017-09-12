@@ -15,7 +15,7 @@ def run_tests(output_format)
 
     allow(knife_oci_server_show.compute_client).to receive(:get_instance).and_return(response)
     allow(knife_oci_server_show.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
-    allow(knife_oci_server_show.network_client).to receive(:get_vnic).and_return(double(data: vnic_info))
+    allow(knife_oci_server_show.network_client).to receive(:get_vnic).and_return(double(data: vnic_info1), double(data: vnic_info2))
     allow(knife_oci_server_show.network_client).to receive(:get_subnet).and_return(double(data: subnet1))
     allow(knife_oci_server_show.identity_client).to receive(:get_compartment).and_return(double(data: compartmentA))
     allow(knife_oci_server_show.compute_client).to receive(:get_image).and_return(double(data: image1))
@@ -51,7 +51,7 @@ def run_tests(output_format)
 
     allow(knife_oci_server_show.compute_client).to receive(:get_instance).and_return(response)
     allow(knife_oci_server_show.compute_client).to receive(:list_vnic_attachments).and_return(vnics)
-    allow(knife_oci_server_show.network_client).to receive(:get_vnic).and_return(double(data: vnic_info))
+    allow(knife_oci_server_show.network_client).to receive(:get_vnic).and_return(double(data: vnic_info1))
     allow(knife_oci_server_show.network_client).to receive(:get_subnet).and_raise(
       OCI::Errors::ServiceError.new(404, 'NotAuthorizedOrNotFound', 'test_request_id', 'Not authorized')
     )
@@ -152,25 +152,43 @@ describe Chef::Knife::OciServerShow do
              to_hash: { 'display_name' => 'hashname' })
     end
 
-    let(:vnic) do
-      double(:vnic,
+    let(:vnic1) do
+      double(:vnic1,
              instance_id: '12345',
              vnic_id: '34567',
              lifecycle_state: 'ATTACHED')
     end
 
+    let(:vnic2) do
+      double(:vnic2,
+             instance_id: '12346',
+             vnic_id: '34568',
+             lifecycle_state: 'ATTACHED')
+    end
+
     let(:vnics) do
-      double(data: [vnic],
+      double(data: [vnic1, vnic2],
              headers: {})
     end
 
-    let(:vnic_info) do
-      double(:vnic_info,
+    let(:vnic_info1) do
+      double(:vnic_info1,
              hostname_label: 'mylabel',
              id: '34567',
              is_primary: true,
              private_ip: '10.0.0.1',
              public_ip: '129.213.29.14',
+             subnet_id: 'mysubnet-1',
+             lifecycle_state: 'ATTACHED')
+    end
+
+    let(:vnic_info2) do
+      double(:vnic_info2,
+             hostname_label: 'mylabel-vnic-2',
+             id: '34568',
+             is_primary: false,
+             private_ip: '10.0.0.2',
+             public_ip: '129.213.29.15',
              subnet_id: 'mysubnet-1',
              lifecycle_state: 'ATTACHED')
     end
