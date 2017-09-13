@@ -2,14 +2,31 @@
 
 require './spec/spec_helper'
 require 'json'
+require 'date'
 require 'chef/knife/oci_server_create'
 
 Chef::Knife::OciServerCreate.load_deps
 
+# rubocop:disable Metrics/BlockLength
 describe Chef::Knife::OciServerCreate do
   let(:knife_oci_server_create) { Chef::Knife::OciServerCreate.new }
 
   describe 'run server create' do
+    let(:compartment) do
+      double(:compartment,
+             description: 'my testing compartment',
+             id: 'compartmentA',
+             name: 'compartmentA name',
+             to_hash: { 'display_name' => 'hashname' })
+    end
+
+    let(:image) do
+      double(:image,
+             display_name: 'myimage',
+             id: 'myimage-id',
+             to_hash: { 'display_name' => 'hashname' })
+    end
+
     let(:instance) do
       double(availability_domain: 'ad1',
              compartment_id: 'compartmentA',
@@ -19,14 +36,32 @@ describe Chef::Knife::OciServerCreate do
              lifecycle_state: 'RUNNING',
              region: 'phx',
              shape: 'round',
-             subnet_id: 'supersubnet')
+             subnet_id: 'supersubnet',
+             time_created: DateTime.new(2017, 7, 16, 12, 13, 14))
+    end
+
+    let(:vcn) do
+      double(:vcn,
+             compartment_id: 'compartmentA',
+             display_name: 'myvcn-display-name',
+             id: 'myvcn-id',
+             to_hash: { 'display_name' => 'hashname' })
     end
 
     let(:vnic) do
       double(public_ip: '123.456.789.101',
              private_ip: '10.0.0.0',
              is_primary: true,
+             subnet_id: 'supersubnet',
              hostname_label: 'myhostname')
+    end
+
+    let(:subnet) do
+      double(:subnet,
+             id: 'supersubnet',
+             display_name: 'compartment A test subnet',
+             subnet_domain_name: 'mysubnet.myvcn.oraclevcn.com',
+             vcn_id: 'myvcn')
     end
 
     let(:min_config) do
@@ -55,6 +90,10 @@ describe Chef::Knife::OciServerCreate do
       allow(knife_oci_server_create).to receive(:wait_for_instance_running).and_return(instance)
       allow(knife_oci_server_create).to receive(:get_vnic).and_return(vnic)
       allow(knife_oci_server_create).to receive(:wait_to_stabilize)
+      allow(knife_oci_server_create.network_client).to receive(:get_subnet).and_return(double(data: subnet))
+      allow(knife_oci_server_create.identity_client).to receive(:get_compartment).and_return(double(data: compartment))
+      allow(knife_oci_server_create.compute_client).to receive(:get_image).and_return(double(data: image))
+      allow(knife_oci_server_create.network_client).to receive(:get_vcn).and_return(double(data: vcn))
       expect(knife_oci_server_create).to receive(:bootstrap)
       expect(knife_oci_server_create.ui).to receive(:msg).at_least(10).times
       expect(knife_oci_server_create).to receive(:get_vnic).with('12345', 'compartmentA')
@@ -83,6 +122,10 @@ describe Chef::Knife::OciServerCreate do
       allow(knife_oci_server_create).to receive(:wait_for_ssh).with(vnic.public_ip, 22, 2, 188).and_return(true)
       allow(knife_oci_server_create).to receive(:wait_for_instance_running).and_return(instance)
       allow(knife_oci_server_create).to receive(:get_vnic).and_return(vnic)
+      allow(knife_oci_server_create.network_client).to receive(:get_subnet).and_return(double(data: subnet))
+      allow(knife_oci_server_create.identity_client).to receive(:get_compartment).and_return(double(data: compartment))
+      allow(knife_oci_server_create.compute_client).to receive(:get_image).and_return(double(data: image))
+      allow(knife_oci_server_create.network_client).to receive(:get_vcn).and_return(double(data: vcn))
       expect(Kernel).to receive(:sleep).with(99)
       expect(knife_oci_server_create).to receive(:bootstrap)
       expect(knife_oci_server_create.ui).to receive(:msg).at_least(10).times
@@ -97,6 +140,10 @@ describe Chef::Knife::OciServerCreate do
       allow(knife_oci_server_create).to receive(:wait_for_ssh).with(vnic.public_ip, 22, 2, 180).and_return(true)
       allow(knife_oci_server_create).to receive(:wait_for_instance_running).and_return(instance)
       allow(knife_oci_server_create).to receive(:get_vnic).and_return(vnic)
+      allow(knife_oci_server_create.network_client).to receive(:get_subnet).and_return(double(data: subnet))
+      allow(knife_oci_server_create.identity_client).to receive(:get_compartment).and_return(double(data: compartment))
+      allow(knife_oci_server_create.compute_client).to receive(:get_image).and_return(double(data: image))
+      allow(knife_oci_server_create.network_client).to receive(:get_vcn).and_return(double(data: vcn))
       expect(Kernel).to receive(:sleep).with(40)
       expect(knife_oci_server_create).to receive(:bootstrap)
       expect(knife_oci_server_create.ui).to receive(:msg).at_least(10).times

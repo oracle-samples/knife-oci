@@ -2,6 +2,7 @@
 
 require 'chef/knife'
 require 'chef/knife/oci_helper'
+require 'chef/knife/oci_helper_show'
 require 'chef/knife/oci_common_options'
 
 class Chef
@@ -11,6 +12,7 @@ class Chef
       banner 'knife oci server create (options)'
 
       include OciHelper
+      include OciHelperShow
       include OciCommonOptions
 
       # Port for SSH - might want to parameterize this in the future.
@@ -135,21 +137,10 @@ class Chef
         instance = response.data
 
         ui.msg "Launched instance '#{instance.display_name}' [#{instance.id}]"
-        show_value('Display Name', instance.display_name)
-        show_value('Instance ID', instance.id)
-        show_value('Availability Domain', instance.availability_domain)
-        show_value('Compartment ID', instance.compartment_id)
-        show_value('Region', instance.region)
-        show_value('Image ID', instance.image_id)
-        show_value('Shape', instance.shape)
-
         instance = wait_for_instance_running(instance.id)
-
         ui.msg "Instance '#{instance.display_name}' is now running."
 
         vnic = get_vnic(instance.id, instance.compartment_id)
-        show_value('Public IP Address', vnic.public_ip)
-        show_value('Private IP Address', vnic.private_ip)
 
         unless wait_for_ssh(vnic.public_ip, SSH_PORT, WAIT_FOR_SSH_INTERVAL_SECONDS, config[:wait_for_ssh_max])
           error_and_exit 'Timed out while waiting for SSH access.'
@@ -166,6 +157,9 @@ class Chef
 
         ui.msg "Created and bootstrapped node '#{config[:chef_node_name]}'."
         ui.msg "\n"
+
+        add_vnic_details(vnic)
+        add_server_details(instance, vnic.vcn_id)
 
         display_server_info(config, instance, [vnic])
       end

@@ -173,36 +173,6 @@ class Chef
       else
         return response
       end
-
-      def show_value(key, value, color = :cyan)
-        ui.msg "#{ui.color(key, color)}: #{value}" if value && !value.to_s.empty?
-      end
-
-      # rubocop:disable Metrics/CyclomaticComplexity
-      def display_server_info(config, instance, vnics)
-        show_value('Display Name', instance.display_name)
-        show_value('Instance ID', instance.id)
-        show_value('Lifecycle State', instance.lifecycle_state)
-        show_value('Availability Domain', instance.availability_domain)
-        show_value('Compartment Name', instance.compartment_name) if instance.respond_to? :compartment_name
-        show_value('Compartment ID', instance.compartment_id)
-        show_value('Region', instance.region)
-        show_value('Image Name', instance.image_name) if instance.respond_to? :image_name
-        show_value('Image ID', instance.image_id)
-        show_value('Shape', instance.shape)
-        show_value('VCN Name', instance.vcn_name) if instance.respond_to? :vcn_name
-        show_value('VCN ID', instance.vcn_id) if instance.respond_to? :vcn_id
-        show_value('Launched', instance.launchtime) if instance.respond_to? :launchtime
-        vnics.each_index do |index|
-          prefix = vnics[index].is_primary ? 'Primary' : 'Secondary'
-          show_value("#{prefix} Public IP Address", vnics[index].public_ip)
-          show_value("#{prefix} Private IP Address", vnics[index].private_ip)
-          show_value("#{prefix} Hostname", vnics[index].hostname_label)
-          show_value("#{prefix} FQDN", vnics[index].fqdn) if vnics[index].respond_to? :fqdn
-          show_value("#{prefix} Subnet Name", vnics[index].subnet_name) if vnics[index].respond_to? :subnet_name
-        end
-        show_value('Node Name', config[:chef_node_name])
-      end
     end
   end
 end
