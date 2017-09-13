@@ -7,8 +7,7 @@ require 'chef/knife/oci_helper_show'
 
 class Chef
   class Knife
-    # List OCI instances. Note that this lists all instances in a
-    # compartment, not just those that are set up as Chef nodes.
+    # List details of a particular OCI instance.
     class OciServerShow < Knife
       banner 'knife oci server show (options)'
 
@@ -21,7 +20,7 @@ class Chef
       end
 
       option :instance_id,
-             long: '--instance_id LIMIT',
+             long: '--instance_id INSTANCE',
              description: 'The OCID of the server to display. (required)'
 
       def run
