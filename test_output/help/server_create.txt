@@ -40,7 +40,7 @@ knife oci server create (options)
         --user-data-file FILE        A file containing data that Cloud-Init can use to run custom scripts or provide custom Cloud-Init configuration. This parameter is a convenience wrapper around the 'user_data' field of the --metadata parameter.  Populating both values in the same call will result in an error. For more info see Cloud-Init documentation: https://cloudinit.readthedocs.org/en/latest/topics/format.html.
     -V, --verbose                    More verbose output. Use twice for max verbosity
     -v, --version                    Show chef version
-        --wait-for-ssh-max SECONDS   The maximum time to wait for SSH to become reachable. Default: 180
+        --wait-for-ssh-max SECONDS   The maximum time to wait for SSH to become reachable. Default: 300
         --wait-to-stabilize SECONDS  Duration to pause after SSH becomes reachable. Default: 40
     -y, --yes                        Say yes to all prompts for confirmation
     -h, --help                       Show this message

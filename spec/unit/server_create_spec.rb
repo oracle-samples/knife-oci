@@ -137,7 +137,7 @@ describe Chef::Knife::OciServerCreate do
       knife_oci_server_create.config = min_config
 
       allow(knife_oci_server_create.compute_client).to receive(:launch_instance).and_return(double(data: instance))
-      allow(knife_oci_server_create).to receive(:wait_for_ssh).with(vnic.public_ip, 22, 2, 180).and_return(true)
+      allow(knife_oci_server_create).to receive(:wait_for_ssh).with(vnic.public_ip, 22, 2, 300).and_return(true)
       allow(knife_oci_server_create).to receive(:wait_for_instance_running).and_return(instance)
       allow(knife_oci_server_create).to receive(:get_vnic).and_return(vnic)
       allow(knife_oci_server_create.network_client).to receive(:get_subnet).and_return(double(data: subnet))
