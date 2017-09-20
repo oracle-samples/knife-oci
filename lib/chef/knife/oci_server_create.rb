@@ -28,14 +28,6 @@ class Chef
         Chef::Knife::Bootstrap.load_deps
       end
 
-      option :oci_config_file,
-             long: '--oci-config-file FILE',
-             description: 'The path to the OCI config file. Default: ~/.oci/config'
-
-      option :oci_profile,
-             long: '--oci-profile PROFILE',
-             description: 'The profile to load from the OCI config file. Default: DEFAULT'
-
       option :availability_domain,
              long: '--availability-domain AD',
              description: 'The Availability Domain of the instance. (required)'
