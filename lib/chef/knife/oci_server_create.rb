@@ -51,10 +51,6 @@ class Chef
              long: '--metadata METADATA',
              description: 'Custom metadata key/value pairs in JSON format.'
 
-      option :skip_source_dest_check,
-             long: '--skip-source-dest-check',
-             description: 'Set the skipSourceDestCheck flag to be true on the created interface. The VCN will not enforce source and destination address checking.'
-
       option :shape,
              long: '--shape SHAPE',
              description: 'The shape of an instance. The shape determines the number of CPUs, amount of memory, and other resources allocated to the instance. (required)'
@@ -140,8 +136,6 @@ class Chef
         request.create_vnic_details = OCI::Core::Models::CreateVnicDetails.new
         request.create_vnic_details.hostname_label = config[:hostname_label]
         request.create_vnic_details.subnet_id = config[:subnet_id]
-        # not yet supported by SDK
-        # request.create_vnic_details.skip_source_dest_check = config[:skip_source_dest_check] ? true : false
 
         response = compute_client.launch_instance(request)
         instance = response.data
