@@ -98,6 +98,7 @@ describe Chef::Knife::OciServerDelete do
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Chef node name: myname')
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef node 'myname'")
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef client 'myname'")
       expect(knife_oci_server_delete.ui).not_to receive(:warn)
 
       knife_oci_server_delete.run
@@ -119,6 +120,7 @@ describe Chef::Knife::OciServerDelete do
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Chef node name: newname')
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef node 'newname'")
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef client 'newname'")
       expect(knife_oci_server_delete.ui).not_to receive(:warn)
 
       knife_oci_server_delete.run

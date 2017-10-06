@@ -85,7 +85,9 @@ class Chef
 
       def delete_chef_client(client_name)
         object = Chef::ApiClient.load(client_name)
-        object.destroy unless object.validator
+        return unless object && !object.validator
+        object.destroy
+        ui.msg "Deleted Chef client '#{client_name}'"
       end
 
       def wait_for_instance_terminated(instance_id, wait_for)
