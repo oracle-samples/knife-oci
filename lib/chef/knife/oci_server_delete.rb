@@ -62,6 +62,7 @@ class Chef
 
         terminate_instance(config[:instance_id])
         delete_chef_node(chef_node) if config[:purge]
+        delete_chef_client(node_name) if config[:purge]
 
         wait_for_instance_terminated(config[:instance_id], wait_for) if wait_for
       end
@@ -80,6 +81,13 @@ class Chef
       def delete_chef_node(node)
         node.destroy
         ui.msg "Deleted Chef node '#{node.name}'"
+      end
+
+      def delete_chef_client(client_name)
+        object = Chef::ApiClient.load(client_name)
+        return unless object && !object.validator
+        object.destroy
+        ui.msg "Deleted Chef client '#{client_name}'"
       end
 
       def wait_for_instance_terminated(instance_id, wait_for)

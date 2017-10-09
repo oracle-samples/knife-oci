@@ -57,6 +57,10 @@ describe Chef::Knife::OciServerDelete do
              lifecycle_state: 'TERMINATED')
     end
 
+    let(:chef_client) do
+      double(name: 'myname')
+    end
+
     let(:chef_node) do
       double(name: 'myname')
     end
@@ -86,11 +90,15 @@ describe Chef::Knife::OciServerDelete do
       allow(knife_oci_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
       allow(knife_oci_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       allow(Chef::Node).to receive(:load).with('myname').and_return(chef_node)
+      allow(Chef::ApiClient).to receive(:load).with('myname').and_return(chef_client)
       expect(chef_node).to receive(:destroy)
+      expect(chef_client).to receive(:destroy)
+      expect(chef_client).to receive(:validator)
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Chef node name: myname')
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef node 'myname'")
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef client 'myname'")
       expect(knife_oci_server_delete.ui).not_to receive(:warn)
 
       knife_oci_server_delete.run
@@ -104,11 +112,15 @@ describe Chef::Knife::OciServerDelete do
       allow(knife_oci_server_delete.compute_client).to receive(:terminate_instance).and_return(nil_response)
       allow(knife_oci_server_delete.compute_client).to receive(:get_instance).and_return(get_server_ok_response)
       allow(Chef::Node).to receive(:load).with('newname').and_return(chef_node_newname)
+      allow(Chef::ApiClient).to receive(:load).with('newname').and_return(chef_client)
       expect(chef_node_newname).to receive(:destroy)
+      expect(chef_client).to receive(:destroy)
+      expect(chef_client).to receive(:validator)
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Instance name: myname')
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Chef node name: newname')
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with('Initiated delete of instance ocid1.instance.oc1.test')
       expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef node 'newname'")
+      expect(knife_oci_server_delete.ui).to receive(:msg).once.ordered.with("Deleted Chef client 'newname'")
       expect(knife_oci_server_delete.ui).not_to receive(:warn)
 
       knife_oci_server_delete.run
