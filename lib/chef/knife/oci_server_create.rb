@@ -240,11 +240,6 @@ class Chef
 
         # stash a copy of the keys, temporarily
         gateway_keys = ssh_gateway_config[:keys]
-        # override with user specified keys
-        if config[:ssh_gateway_identity]
-          gateway_keys = Array(config[:ssh_gateway_identity])
-        end
-
         gateway_options[:keys] = gateway_keys unless gateway_keys.nil?
 
         Net::SSH::Gateway.new(gw_host, gw_user, gateway_options)
