@@ -24,6 +24,7 @@ class Chef
 
       deps do
         require 'oci'
+        # we rely on chef to provide net/ssh/gateway
         require 'chef/knife/bootstrap'
         Chef::Knife::Bootstrap.load_deps
       end
@@ -65,6 +66,10 @@ class Chef
              long: '--subnet-id SUBNET',
              description: 'The OCID of the subnet. (required)'
 
+      option :use_private_ip,
+             long: '--use-private-ip',
+             description: 'Use private IP address for Chef bootstrap.'
+
       option :user_data_file,
              long: '--user-data-file FILE',
              description: 'A file containing data that Cloud-Init can use to run custom scripts or provide custom Cloud-Init configuration. This parameter is a convenience '\
@@ -76,6 +81,11 @@ class Chef
              long: '--ssh-user USERNAME',
              description: 'The SSH username. Defaults to opc.',
              default: 'opc'
+
+      option :ssh_gateway,
+             short: '-G USERNAME@GATEWAY:PORT',
+             long: '--ssh-gateway USERNAME@GATEWAY:PORT',
+             description: 'The gateway host (and optionally, username and port) to be used for proxying the SSH access to the instance.'
 
       option :ssh_password,
              short: '-P PASSWORD',
@@ -119,11 +129,13 @@ class Chef
         request.availability_domain = config[:availability_domain]
         request.compartment_id = compartment_id
         request.display_name = config[:display_name]
-        request.hostname_label = config[:hostname_label]
         request.image_id = config[:image_id]
         request.metadata = metadata
         request.shape = config[:shape]
-        request.subnet_id = config[:subnet_id]
+
+        request.create_vnic_details = OCI::Core::Models::CreateVnicDetails.new
+        request.create_vnic_details.hostname_label = config[:hostname_label]
+        request.create_vnic_details.subnet_id = config[:subnet_id]
 
         response = compute_client.launch_instance(request)
         instance = response.data
@@ -133,8 +145,9 @@ class Chef
         ui.msg "Instance '#{instance.display_name}' is now running."
 
         vnic = get_vnic(instance.id, instance.compartment_id)
+        ipaddr = config[:use_private_ip] ? vnic.private_ip : vnic.public_ip
 
-        unless wait_for_ssh(vnic.public_ip, SSH_PORT, WAIT_FOR_SSH_INTERVAL_SECONDS, config[:wait_for_ssh_max])
+        unless wait_for_ssh(ipaddr, SSH_PORT, WAIT_FOR_SSH_INTERVAL_SECONDS, config[:wait_for_ssh_max])
           error_and_exit 'Timed out while waiting for SSH access.'
         end
 
@@ -144,8 +157,7 @@ class Chef
 
         ui.msg "Bootstrapping with node name '#{config[:chef_node_name]}'."
 
-        # TODO: Consider adding a use_private_ip option.
-        bootstrap(vnic.public_ip)
+        bootstrap(ipaddr, config[:ssh_gateway])
 
         ui.msg "Created and bootstrapped node '#{config[:chef_node_name]}'."
         ui.msg "\n"
@@ -156,7 +168,7 @@ class Chef
         display_server_info(config, instance, [vnic])
       end
 
-      def bootstrap(name)
+      def bootstrap(name, ssh_gateway)
         bootstrap = Chef::Knife::Bootstrap.new
 
         bootstrap.name_args = [name]
@@ -165,10 +177,10 @@ class Chef
         bootstrap.config[:ssh_password] = config[:ssh_password]
         bootstrap.config[:identity_file] = config[:identity_file]
         bootstrap.config[:use_sudo] = true
-        bootstrap.config[:ssh_gateway] = config[:ssh_user] + '@' + name
         bootstrap.config[:run_list] = config[:run_list]
-
         bootstrap.config[:yes] = true if config[:yes]
+
+        bootstrap.config[:ssh_gateway] = ssh_gateway if ssh_gateway
 
         bootstrap.run
       end
@@ -187,9 +199,10 @@ class Chef
       end
 
       def wait_to_stabilize
-        # This extra sleep even after getting SSH access is necessary. It's not clear why, but without it we often get
-        # errors about missing a password for ssh, or sometimes errors during bootstrapping. (Note that plugins for other
-        # cloud providers have similar sleeps.)
+        # This extra sleep even after getting SSH access is necessary. It's not clear why,
+        # but without it we often get errors about missing a password for ssh, or sometimes
+        # errors during bootstrapping. (Note that plugins for other cloud providers have
+        # similar sleeps.)
         Kernel.sleep(config[:wait_to_stabilize])
       end
 
@@ -197,10 +210,12 @@ class Chef
         print ui.color('Waiting for ssh access...', :magenta)
 
         end_time = Time.now + max_time_seconds
+        ssh_gateway = config[:ssh_gateway] ? config[:ssh_gateway] : nil
 
         begin
           while Time.now < end_time
-            return true if can_ssh(hostname, ssh_port)
+            can_connect = ssh_gateway ? can_connect_tunneled(ssh_gateway, hostname, ssh_port) : can_connect_direct(hostname, ssh_port)
+            return true if can_connect
 
             show_progress
             sleep interval_seconds
@@ -212,7 +227,39 @@ class Chef
         false
       end
 
-      def can_ssh(hostname, ssh_port)
+      # returns a Net::SSH:Gateway object or nil
+      def get_ssh_gateway(ssh_gateway)
+        # Probably should be doing a more complete lookup here.
+        # For example, looking in ssh configuration files, etc.
+        return nil unless ssh_gateway
+        gw_host, gw_user = ssh_gateway.split('@').reverse
+        gw_host, gw_port = gw_host.split(':')
+        gateway_options = { port: gw_port || SSH_PORT }
+        ssh_gateway_config = Net::SSH::Config.for(gw_host)
+        gw_user ||= ssh_gateway_config[:user]
+
+        # stash a copy of the keys, temporarily
+        gateway_keys = ssh_gateway_config[:keys]
+        gateway_options[:keys] = gateway_keys unless gateway_keys.nil?
+
+        Net::SSH::Gateway.new(gw_host, gw_user, gateway_options)
+      end
+
+      def can_connect_tunneled(ssh_gateway, hostname, ssh_port)
+        status = false
+        gateway = get_ssh_gateway(ssh_gateway)
+        gateway.open(hostname, ssh_port) do |local_tunnel_port|
+          status = can_connect_direct('localhost', local_tunnel_port)
+        end
+        status
+      rescue SocketError, IOError, Errno::ETIMEDOUT, Errno::EPERM, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Errno::ENETUNREACH, Errno::ECONNRESET, Errno::ENOTCONN
+        false
+      ensure
+        # tear down the gateway, so no tunnel sockets are left connected
+        gateway && gateway.shutdown!
+      end
+
+      def can_connect_direct(hostname, ssh_port)
         socket = TCPSocket.new(hostname, ssh_port)
         # Wait up to 5 seconds.
         readable = IO.select([socket], nil, nil, 5)

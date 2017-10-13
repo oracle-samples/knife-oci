@@ -34,9 +34,12 @@ knife oci server create (options)
         --shape SHAPE                The shape of an instance. The shape determines the number of CPUs, amount of memory, and other resources allocated to the instance. (required)
         --ssh-authorized-keys-file FILE
                                      A file containing one or more public SSH keys to be included in the ~/.ssh/authorized_keys file for the default user on the instance. Use a newline character to separate multiple keys. The SSH keys must be in the format necessary for the authorized_keys file. This parameter is a convenience wrapper around the 'ssh_authorized_keys' field of the --metadata parameter. Populating both values in the same call will result in an error. For more info see documentation: https://docs.us-phoenix-1.oraclecloud.com/api/#/en/iaas/20160918/requests/LaunchInstanceDetails. (required)
+    -G USERNAME@GATEWAY:PORT,        The gateway host (and optionally, username and port) to be used for proxying the SSH access to the instance.
+        --ssh-gateway
     -P, --ssh-password PASSWORD      The SSH password
     -x, --ssh-user USERNAME          The SSH username. Defaults to opc.
         --subnet-id SUBNET           The OCID of the subnet. (required)
+        --use-private-ip             Use private IP address for Chef bootstrap.
         --user-data-file FILE        A file containing data that Cloud-Init can use to run custom scripts or provide custom Cloud-Init configuration. This parameter is a convenience wrapper around the 'user_data' field of the --metadata parameter.  Populating both values in the same call will result in an error. For more info see Cloud-Init documentation: https://cloudinit.readthedocs.org/en/latest/topics/format.html.
     -V, --verbose                    More verbose output. Use twice for max verbosity
     -v, --version                    Show chef version
