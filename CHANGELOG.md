@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2.0.1 - 2019-01-09
+### Changed
+- Change default ssh timeout for `knife oci server create` from 180s to 300s.
+
+### Fixed
+- Fix help text in `knife oci server show --instance_id` and `knife oci server delete --purge` commands.
+
+### Added
+- Support for multiple VNICs. `knife oci server show` can show multiple VNICs.
+- Support in `--purge` param for `knife oci server delete` to remove the Chef Client as well as the Chef Node.
+
 ## 2.0.0 - 2017-09-11
 ### Changed
 - Changed the gem name from knife-bmcs to knife-oci, and changed all occurances of BMCS to OCI. Details can be found [here](docs/rename.md).
