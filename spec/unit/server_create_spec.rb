@@ -186,17 +186,7 @@ describe Chef::Knife::OciServerCreate do
 
   describe 'wait_for_ssh' do
     it 'should return false on timeout' do
-      allow(knife_oci_server_create).to receive(:can_connect_direct).and_return(false)
-      expect(knife_oci_server_create).to receive(:show_progress).at_least(10).times
-      expect(knife_oci_server_create.ui).to receive(:color).once.ordered.with('Waiting for ssh access...', :magenta)
-      expect(knife_oci_server_create.ui).to receive(:color).once.ordered.with("done\n", :magenta)
-      expect(knife_oci_server_create.wait_for_ssh('111.111.111.111', 22, 0.01, 0.5)).to eq(false)
-    end
-
-    it 'should return false on timeout (ssh gateway)' do
-      knife_oci_server_create.config[:ssh_gateway] = 'nobody@111.111.111.11:22'
-      allow(knife_oci_server_create).to receive(:can_connect_tunneled).and_return(false)
-      allow(knife_oci_server_create).to receive(:get_ssh_gateway).and_return(true)
+      allow(knife_oci_server_create).to receive(:can_ssh).and_return(false)
       expect(knife_oci_server_create).to receive(:show_progress).at_least(10).times
       expect(knife_oci_server_create.ui).to receive(:color).once.ordered.with('Waiting for ssh access...', :magenta)
       expect(knife_oci_server_create.ui).to receive(:color).once.ordered.with("done\n", :magenta)
@@ -204,17 +194,7 @@ describe Chef::Knife::OciServerCreate do
     end
 
     it 'should return immediately on success' do
-      allow(knife_oci_server_create).to receive(:can_connect_direct).and_return(true)
-      expect(knife_oci_server_create).to receive(:show_progress).exactly(0).times
-      expect(knife_oci_server_create.ui).to receive(:color).once.ordered.with('Waiting for ssh access...', :magenta)
-      expect(knife_oci_server_create.ui).to receive(:color).once.ordered.with("done\n", :magenta)
-      expect(knife_oci_server_create.wait_for_ssh('111.111.111.111', 22, 0.01, 0.5)).to eq(true)
-    end
-
-    it 'should return immediately on success (ssh gateway)' do
-      knife_oci_server_create.config[:ssh_gateway] = 'nobody@111.111.111.11:22'
-      allow(knife_oci_server_create).to receive(:can_connect_tunneled).and_return(true)
-      allow(knife_oci_server_create).to receive(:get_ssh_gateway).and_return(true)
+      allow(knife_oci_server_create).to receive(:can_ssh).and_return(true)
       expect(knife_oci_server_create).to receive(:show_progress).exactly(0).times
       expect(knife_oci_server_create.ui).to receive(:color).once.ordered.with('Waiting for ssh access...', :magenta)
       expect(knife_oci_server_create.ui).to receive(:color).once.ordered.with("done\n", :magenta)
