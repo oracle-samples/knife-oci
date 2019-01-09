@@ -31,7 +31,7 @@ class Chef
 
       option :purge,
              long: '--purge',
-             description: 'Remove the corresponding node from the Chef Server. The instance display name will be used as the node name, unless --node-name is specified.'
+             description: 'Remove the corresponding node and client from the Chef Server. The instance display name will be used as the node name, unless --node-name is specified.'
 
       option :chef_node_name,
              short: '-N NAME',
