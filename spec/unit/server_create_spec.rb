@@ -180,7 +180,7 @@ describe Chef::Knife::OciServerCreate do
 
     it 'should add to user agent' do
       knife_oci_server_create.config[:oci_config_file] = DUMMY_CONFIG_FILE
-      expect(knife_oci_server_create.oci_config.additional_user_agent).to eq 'Oracle-ChefKnifeOCI/2.0.1'
+      expect(knife_oci_server_create.oci_config.additional_user_agent).to eq 'Oracle-ChefKnifeOCI/2.0.2'
     end
   end
 
