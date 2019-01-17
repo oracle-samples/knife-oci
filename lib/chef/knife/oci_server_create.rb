@@ -165,7 +165,6 @@ class Chef
         bootstrap.config[:ssh_password] = config[:ssh_password]
         bootstrap.config[:identity_file] = config[:identity_file]
         bootstrap.config[:use_sudo] = true
-        bootstrap.config[:ssh_gateway] = config[:ssh_user] + '@' + name
         bootstrap.config[:run_list] = config[:run_list]
 
         bootstrap.config[:yes] = true if config[:yes]
