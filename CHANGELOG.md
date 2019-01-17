@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## 2.0.2 - 2019-01-17
+### Fixed
+- Fixed SSH failure during "knife oci server create" when using newer Chef Workstation and ChefDK versions.
+
 ## 2.0.1 - 2019-01-09
 ### Changed
 - Change default ssh timeout for `knife oci server create` from 180s to 300s.
