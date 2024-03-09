@@ -96,9 +96,11 @@ See [CHANGELOG](/CHANGELOG.md).
 
 ## Contributing
 
-knife-oci is an open source project. See [CONTRIBUTING](/CONTRIBUTING.md) for details.
+This project welcomes contributions from the community. Before submitting a pull request, please [review our contribution guide](./CONTRIBUTING.md)
 
-Oracle gratefully acknowledges the contributions to knife-oci that have been made by the community.
+## Security
+
+Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process
 
 ## Known Issues
 
@@ -106,7 +108,7 @@ You can find information on any known issues with the SDK [here](https://docs.us
 
 ## License
 
-Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2017, 2023 Oracle and/or its affiliates. All rights reserved.
 
 This SDK and sample is dual licensed under the Universal Permissive License 1.0 and the Apache License 2.0.
 
